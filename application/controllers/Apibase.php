@@ -59,7 +59,7 @@ class ApibaseController extends Yaf_Controller_Abstract
         echo " $callback($json);";
     }/*}}}*/
 
-    public function outPut($res,$callback)
+    public function outPut($res,$callback = null)
     {/*{{{*/
         if(!empty($res['errno'])) {
             if ($res['msg'] && $res['msg'] != 'succ') {

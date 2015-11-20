@@ -8,9 +8,8 @@
 class IndexController extends Yaf_Controller_Abstract {
         public function init()
         {
-		$LoaderSvcObj = new LoaderSvc;
-		$LoaderSvcObj->init();
-		die();
+ 		echo 'OK';
+		die('!');
 	}
 	/** 
      * 默认动作
@@ -29,6 +28,6 @@ class IndexController extends Yaf_Controller_Abstract {
 		$this->getView()->assign("name", $name);
 
 		//4. render by Yaf, 如果这里返回FALSE, Yaf将不会调用自动视图引擎Render模板
-        return TRUE;
+                return TRUE;
 	}
 }
