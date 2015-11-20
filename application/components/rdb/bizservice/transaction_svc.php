@@ -2,11 +2,12 @@
 class TransactionSvc
 {/*{{{*/
 	const OBJ = 'Transaction';
-	static public function add($param)
+	static private function add($param)
 	{
 		$obj = Transaction::createByBiz($param);
 		return self::getDao()->add($obj);
 	}
+	
 	static public function getById($id = '0')
 	{
 		if (empty($id))
@@ -119,10 +120,84 @@ class TransactionSvc
 	{
 		return self::getDao()->getByUid($uid);
 	}
-
-	static public function getByOrderid($orderid)
+	
+	private static function releaseOrderLock($orderid)
 	{
-		return self::getDao()->getByOrderid($orderid);
+		$lock = 'ORDER_'.$orderid;
+		$r = MysqlSvc::releaseLock($lock);
+		return $r;
+	}
+
+	private static function getOrderLock($orderid)
+	{
+		$lock = 'ORDER_'.$orderid;
+		$r = MysqlSvc::getLock($lock);
+		return $r;
+	}
+	
+	/**
+	 * 新增一条交易记录
+	 * @param $param
+	 * array(
+	 * 		orderid 必须
+	 * 		btype   必须
+	 * 		uid		必须
+	 * 		type	必须
+	 * 		amount  必须
+	 * 		
+	 * 		fee		可选
+	 * 		remark  可选
+	 * )
+	 * 
+	 */
+	static public function addTrans($param = array())
+	{
+		$orderid = $param['orderid'];
+		$btype = $param['btype'];
+		$uid = $param['uid'];
+		$remark = isset($param['remark']) ? $param['remark'] : '';
+		$fee = isset($param['fee']) ? $param['fee'] : 0;
+		$tin = isset($param['tin']) ? $param['tin'] : 0;
+		$tout = isset($param['tout']) ? $param['tout'] : 0;
+		
+		if(strlen($orderid) == 0) return false;
+		
+		$r = self::getOrderLock($orderid);
+		
+		if(!$r){
+			self::releaseOrderLock($orderid);
+			return false;
+		} 
+		
+		$result = self::getByOrderid($orderid);
+		if(!empty($result)){
+			self::releaseOrderLock($orderid);
+			return false;
+		}
+		
+		$params = array(
+			'orderid'=>$orderid,
+		    'btype'=>$btype,
+			'uid'=>$uid,
+			'remark'=>$remark,
+		);
+		
+		if($param['type'] == Transaction::TYPE_IN){
+			$params['tin'] = floatval($param['amount']);
+		}elseif($param['type'] == Transaction::TYPE_OUT){
+			$params['tout'] = floatval($param['amount']);
+		}else{
+			self::releaseOrderLock($orderid);
+			return false;
+		}
+		
+		$params['type'] = $param['type'];
+		$params['fee'] = floatval($param['fee']) > 0 ? floatval($param['fee']) : 0;
+		$obj = self::add($params);
+		//写操作完毕，释放锁定
+		self::releaseOrderLock($orderid);
+		if(is_object($obj)) return $obj->id;
+		return false;
 	}
 
 	static public function getTransByUid($uid,$params = array(),$option = array())
@@ -143,6 +218,11 @@ class TransactionSvc
         $request = array_merge($request,$params);
         $results = self::lists($request,$options,true);
         return $results;
+    }
+    
+    static public function getByOrderid($orderid)
+    {
+    	return self::getDao()->getByOrderid($orderid);
     }
 
 }

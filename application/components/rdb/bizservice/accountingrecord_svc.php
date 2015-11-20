@@ -96,23 +96,23 @@ class AccountingrecordSvc
 	}
 
 	static public function getAccountsRecordByUid($uid,$params = array(),$option = array())
-        {
-                $request = array(
-                        'uid'=>$uid,
-                );
+    {
+		$request = array(
+        	'uid'=>$uid,
+        );
 
-                $options = [];
+        $options = [];
 		$page = intval($option['page']);
 		$page = $page >= 1 ? $page : 1;
-                $len = intval($option['len']);
+	    $len = intval($option['len']);
 		$len = $len > 0 ? $len : 10; 
-		
-                $options['len'] = $len;
-                $options['offset'] = ($page - 1) * len;
-                if(isset($option['orderby'])) $options['orderby'] = $option['orderby'];
-                $request = array_merge($request,$params);
-                $results = self::lists($request,$options,true);
-                return $results;
-        }
+				
+        $options['len'] = $len;
+        $options['offset'] = ($page - 1) * len;
+        if(isset($option['orderby'])) $options['orderby'] = $option['orderby'];
+        $request = array_merge($request,$params);
+        $results = self::lists($request,$options,true);
+        return $results;
+     }
 	
 }

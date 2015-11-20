@@ -57,22 +57,21 @@ class FreezesDao extends BaseDao
 	}
 
 
-	public function getFreezes($accountid)
+	public function getFreezesByAccounts($accountid)
 	{
 
 		$results = $this->getByAccountid($accountid,Freezes::STATE_FREEZE_IN);
 		return $results;
 	}
+	
 
 	public function getFreezesSum($accountid)
 	{
-
 		$sum = 0;
-		$results  = $this->getFreezesByAccount($accountid);
+		$results  = $this->getFreezesByAccounts($accountid);
 		foreach($results as $row){
 			$sum += $row['amount'];
 		}
-
 		return $sum;
 
 	}

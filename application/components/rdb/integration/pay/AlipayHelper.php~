@@ -1,0 +1,15 @@
+<?php
+class AlipayHelper
+{
+
+	public static function responseSucc()
+	{
+		exit('SUCCESS');
+	}
+	
+	public static function responseFail()
+	{
+		exit('FAIL');
+	}
+
+}

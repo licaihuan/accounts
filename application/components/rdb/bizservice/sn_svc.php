@@ -1,14 +1,17 @@
 <?php
 class SnSvc
 {
-    const PADDING_LEN = 20;
+    const PADDING_LEN = 8;
 
 	const CHANNEL_ID_LOCAL = '00';
     const CHANNEL_ID_UNKNOWN = '99';
+    const CHANNEL_ID_MOBILE = '10';
+    
 
     static $CHANNEL_OPTIONS = array(
         self::CHANNEL_ID_LOCAL,
         self::CHANNEL_ID_UNKNOWN,
+        self::CHANNEL_ID_MOBILE,
     );
 
     static $CHANNEL_ID_CONF = array(
@@ -17,6 +20,9 @@ class SnSvc
         ),
         self::CHANNEL_ID_UNKNOWN=>array(
             'NAME'=>'未知渠道',
+        ),
+        self::CHANNEL_ID_MOBILE=>array(
+            'NAME'=>'移动端',
         ),
     );
     
@@ -47,7 +53,7 @@ class SnSvc
         self::MODULE_ID_REFUND=>array(
             'NAME'=>'退款',
         ),
-        self::MODULEL_ID_UNKNOWN=>array(
+        self::MODULE_ID_UNKNOWN=>array(
             'NAME'=>'未知业务',
         ),
     );
@@ -62,11 +68,12 @@ class SnSvc
 
         if(in_array($moduleid,self::$MODULE_OPTIONS)) $sn .= $moduleid;
         else  $sn .= self::MODULE_ID_UNKNOWN;
-
+        
         for($i = 0;$i < (self::PADDING_LEN - strlen($id));$i++){
             $sn .='0';
         }
-        $sn .= "{$sn}"."{$id}".substr(date('YmdHis'),2,12).mt_rand(1000,9999);
+       
+        $sn = "{$sn}"."{$id}".substr(date('YmdHis'),2,12).mt_rand(1000,9999);
         return $sn;
     }
 }

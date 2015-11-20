@@ -1,5 +1,5 @@
 <?php
-class Transaction extends Entity
+class Freezes extends Entity
 {
 	const CAT_REFUND      = 11;
 	const CAT_CASH		  = 12;

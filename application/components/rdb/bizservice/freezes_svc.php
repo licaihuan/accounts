@@ -83,7 +83,7 @@ class FreezesSvc
 
 	static public function getFreezesSum($accountid)
 	{
-		return self::getDao()->getFreezeSum($accountid);
+		return self::getDao()->getFreezesSum($accountid);
 	}
 
 }

@@ -31,6 +31,19 @@ class Accountingrecord extends Entity
 		self::CAT_CASH =>array('NAME'=>'取现'),
 		self::CAT_RECHARGE =>array('NAME'=>'充值'),
 	);
+	
+	const FROM_SYS         = 11;
+	const FROM_ALIPAY      = 12;
+
+	static $FROM_OPTIONS = array(
+		self::FROM_SYS,
+		self::FROM_ALIPAY,
+	);
+
+	static $FROM_CONF = array(
+		self::FROM_SYS =>array('NAME'=>'系统内部'),
+		self::FROM_ALIPAY =>array('NAME'=>'支付宝'),
+	);
 
 	const STATE_NORMAL   = 1;
 	const STATE_REVERSAL = 2;
@@ -52,7 +65,7 @@ class Accountingrecord extends Entity
 		$obj->id = isset($param['id']) ? $param['id'] : LoaderSvc::loadIdGenter()->create(self::ID_OBJ);
 		$obj->ctime = date('Y-m-d H:i:s');
 		$obj->utime = date('Y-m-d H:i:s');
-		$obj->datetime = $param['datetime'];
+		$obj->datetime = is_null($param['datetime']) ? date('Y-m-d H:i:s') : $param['datetime'];
 		$obj->type = in_array($param['type'],self::$TYPE_OPTIONS) ? $param['type'] : self::TYPE_IN;
 		$obj->in = isset($param['in']) ? $param['in'] : 0;
 		$obj->out = isset($param['out']) ? $param['out'] : 0;
@@ -60,10 +73,11 @@ class Accountingrecord extends Entity
 		$obj->accountid = $param['accountid'];
 		$obj->remark = isset($param['remark']) ? $param['remark'] : '';
 		$obj->cat = in_array($param['cat'],self::$CAT_OPTIONS) ? $param['cat'] : self::CAT_RECHARGE;
-		$obj->from = isset($param['from']) ? $param['from'] : 'Sys';
+		$obj->from = in_array($param['from'],self::$FROM_OPTIONS) ? $param['from'] : self::FROM_SYS;
 		$obj->transid = isset($param['transid']) ? $param['transid'] : '';
 		$obj->uid = isset($param['uid']) ? $param['uid'] : '';
 		$obj->state = in_array($param['state'],self::$STATE_OPTIONS) ? $param['state'] : self::STATE_NORMAL;
+		$obj->balance = isset($param['balance']) ? $param['balance'] : 0;
 		return $obj;
 	}
 }

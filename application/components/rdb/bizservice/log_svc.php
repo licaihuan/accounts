@@ -1,5 +1,5 @@
 <?php
-use \rdb\integration;
+//use \rdb\integration;
 
 class LogSvc
 {/*{{{*/
@@ -70,8 +70,8 @@ class LogSvc
     	}
     	$log = '['.date('Y-m-d H:i:s').']'.PHP_EOL.$log;
     	$log .= PHP_EOL;
-        $fname = Yaf_Registry::get('config')->application->log_path.'/'.$name.'.log';
-    	file_put_contents($fname.'-'.date('Ymd').'.log',$log,FILE_APPEND);
+        $fname = Yaf_Registry::get('config')->application->log_path.'/'.$name.'-'.date('Ymd').'.log';
+    	file_put_contents($fname,$log,FILE_APPEND);
     }
 
     public static function info($log)

@@ -1,6 +1,4 @@
 <?php
-namespace rdb\integration;
-
 class LogObject
 {/*{{{*/
     private $_fp = null;

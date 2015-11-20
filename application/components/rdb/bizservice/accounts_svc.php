@@ -153,7 +153,7 @@ class AccountsSvc
     /**
 	 * @brief 获取账户信息
 	 */
-	static public getAccountsInfo($uid,$cat = Accounts::CAT_CASH)
+	static public function getAccountsInfo($uid,$cat = Accounts::CAT_CASH)
 	{
 		$r = self::getDao()->getByUidAndCat($uid,$cat);
 		//账户不存在创建账户
@@ -213,7 +213,7 @@ class AccountsSvc
 				LoaderSvc::loadExecutor()->rollback();
 			}else{
 				if(LoaderSvc::loadExecutor()->inTrans()){
-					$obj = FreezesSvc::getById($freezesid)
+					$obj = FreezesSvc::getById($freezesid);
 					if($obj->state != Freezes::STATE_FREEZE_IN){
 						$ret = array(
 							'e'=>ErrorSvc::ERR_UNFREEZE_FAIL,
@@ -333,8 +333,13 @@ class AccountsSvc
 	 *  $response 说明：
 	 *	'amount'=>1.00, //交易金额(不包含手续费)
 	 *  'fee'=>0.00，//手续费
-	 *	'orderid'=> '', //订单号(可选)
 	 *	'out_trans_id'=>'',//第三方交易单号
+	 *
+	 *	 $accountid   账户ID
+	 *	 $transid     交易ID
+	 *	 $cat         业务类型
+	 *   $from        来源渠道
+	 *   $remark      备注
      *
 	 */
 	static public function accountingProcess($response,$accountid,$transid,$cat,$from,$remark = '')
@@ -342,6 +347,16 @@ class AccountsSvc
 		$ret = array(
 			'e'=>ErrorSvc::ERR_OK,
 		);
+		
+		$_amount_ = sprintf("%.2f",$response['amount']);
+		$_fee_ = sprintf("%.2f",$response['fee']);
+		
+		if($_amount_ < 0 || $_fee_ < 0){
+			$ret = array(
+				'e'=>ErrorSvc::ERR_PARAM_INVALID,
+			);
+			return $ret;
+		}
 
 		//锁定账户
 		$r = self::getAccountsLock($accountid);
@@ -375,40 +390,56 @@ class AccountsSvc
 					}else{
 						if(LoaderSvc::loadExecutor()->inTrans()){
 							$accountobj = self::getById($accountid);
-
-							$_amount_ = $response['amount'];
-							$_fee_ = $response['fee'];
-							if($transobj->type = Transaction::TYPE_IN){
-								$_type = Accountingrecord::TYPE_IN;
-								if($transobj->$tin != $_amount_){
+							if($transobj->type == Transaction::TYPE_IN){
+								$_type_ = Accountingrecord::TYPE_IN;
+								if(bccomp($transobj->tin,$_amount_,2) != 0){
 									$ret = array(
 										'e'=>ErrorSvc::ERR_RESPONSE_NOT_MACHED,
 									);
 
-									$f_log = array_merge($response,$ret);
-									LogSvc::fileLog('ERROR_AccountsSvc.accountingProcess',$_f_log);
+									$_f_log_ = array_merge(
+										$response,
+										array(
+											'transid'=>$transid,
+											'from'=>$from,
+											'cat'=>$cat,
+											'remark'=>$remark,
+										),
+										$ret
+									);
+									LogSvc::fileLog('ERROR_'.__CLASS__.'.'.__FUNCTION__,$_f_log_);
 									LoaderSvc::loadExecutor()->rollback();
 									self::releaseAccountsLock($accountid);
 									return $ret;
 								}
 
-								$amount = $transobj->$tin - $transobj->$fee;
-								$balance = $accountobj->balance + $amount;
+								$amount = bcsub($_amount_,$_fee_,2);
+								$balance = bcadd($accountobj->balance,$amount,2);
 							}else{
-								$_type = Accountingrecord::TYPE_OUT;
-								if($transobj->$tout != $_amount_){
+								$_type_ = Accountingrecord::TYPE_OUT;
+								if(bccomp($transobj->tout,$_amount_,2) != 0){
 									$ret = array(
 										'e'=>ErrorSvc::ERR_RESPONSE_NOT_MACHED,
 									);
 									
-									$f_log = array_merge($response,$ret);
-									LogSvc::fileLog('ERROR_AccountsSvc.accountingProcess',$_f_log);
+									$_f_log_ = array_merge(
+										$response,
+										array(
+											'transid'=>$transid,
+											'from'=>$from,
+											'cat'=>$cat,
+											'remark'=>$remark,
+										),
+										$ret
+									);
+									LogSvc::fileLog('ERROR_'.__CLASS__.'.'.__FUNCTION__,$_f_log_);
 									LoaderSvc::loadExecutor()->rollback();
 									self::releaseAccountsLock($accountid);
 									return $ret;
 								}
-								$amount = $transobj->$tout + $transobj->$fee;
-								$balance = $accountobj->balance - $amount;
+								$amount = bcadd($_amount_,$_fee_,2);
+								$balance = bcsub($accountobj->balance,$_amount_,2);
+
 								if($balance < 0){
 									$ret = array(
 										'e'=>ErrorSvc::ERR_ACCOUNTS_BALANCE_SHORTAGE,
@@ -445,7 +476,7 @@ class AccountsSvc
 								'state'=>Accountingrecord::STATE_NORMAL,
 							);
 
-							if($_type == Accountingrecord::TYPE_IN){
+							if($_type_ == Accountingrecord::TYPE_IN){
 								$log['in'] = $_amount_;
 							}else{
 								$log['out'] = $_amount_;
