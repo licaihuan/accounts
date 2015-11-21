@@ -260,6 +260,8 @@ class AccountsSvc
 		$ret = array(
 			'e'=>ErrorSvc::ERR_OK,
 		);
+		
+		$amount = sprintf("%.2f",$amount);
 		//锁定账户
 		$r = self::getAccountsLock($accountid);
 		if(!$r){

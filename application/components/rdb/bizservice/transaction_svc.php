@@ -156,14 +156,11 @@ class TransactionSvc
 		$btype = $param['btype'];
 		$uid = $param['uid'];
 		$remark = isset($param['remark']) ? $param['remark'] : '';
-		$fee = isset($param['fee']) ? $param['fee'] : 0;
-		$tin = isset($param['tin']) ? $param['tin'] : 0;
-		$tout = isset($param['tout']) ? $param['tout'] : 0;
+		$fee = isset($param['fee']) ? sprinf("%.2f",$param['fee']) : 0;
 		
 		if(strlen($orderid) == 0) return false;
 		
 		$r = self::getOrderLock($orderid);
-		
 		if(!$r){
 			self::releaseOrderLock($orderid);
 			return false;
@@ -183,9 +180,9 @@ class TransactionSvc
 		);
 		
 		if($param['type'] == Transaction::TYPE_IN){
-			$params['tin'] = floatval($param['amount']);
+			$params['tin'] = sprinf("%.2f",$param['amount']);
 		}elseif($param['type'] == Transaction::TYPE_OUT){
-			$params['tout'] = floatval($param['amount']);
+			$params['tout'] = sprinf("%.2f",$param['amount']);
 		}else{
 			self::releaseOrderLock($orderid);
 			return false;

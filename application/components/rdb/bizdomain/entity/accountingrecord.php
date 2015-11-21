@@ -16,20 +16,23 @@ class Accountingrecord extends Entity
 		self::TYPE_OUT =>array('NAME'=>'支出'),
 	);
 
-	const CAT_REFUND      = 11;
-	const CAT_CASH		  = 12;
-	const CAT_RECHARGE    = 13;
+	const CAT_REFUND         = 11;
+	const CAT_CASH		     = 12;
+	const CAT_RECHARGE       = 13;
+	const CAT_BALANCE_PAY    = 14;
 
 	static $CAT_OPTIONS = array(
 		self::CAT_REFUND,
 		self::CAT_CASH,
 		self::CAT_RECHARGE,
+		self::CAT_BALANCE_PAY,
 	);
 
 	static $CAT_CONF = array(
 		self::CAT_REFUND =>array('NAME'=>'退款'),
 		self::CAT_CASH =>array('NAME'=>'取现'),
 		self::CAT_RECHARGE =>array('NAME'=>'充值'),
+		self::CAT_BALANCE_PAY =>array('NAME'=>'余额支付'),
 	);
 	
 	const FROM_SYS         = 11;
@@ -41,7 +44,7 @@ class Accountingrecord extends Entity
 	);
 
 	static $FROM_CONF = array(
-		self::FROM_SYS =>array('NAME'=>'系统内部'),
+		self::FROM_SYS =>array('NAME'=>'系统内'),
 		self::FROM_ALIPAY =>array('NAME'=>'支付宝'),
 	);
 

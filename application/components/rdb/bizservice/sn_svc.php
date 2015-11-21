@@ -26,21 +26,27 @@ class SnSvc
         ),
     );
     
+    const MODULE_ID_UNKNOWN       = '99';
     const MODULE_ID_RECHARGE      = '01';
     const MODULE_ID_PAY           = '02';
     const MODULE_ID_CASH          = '03';
     const MODULE_ID_REFUND        = '04';
-    const MODULE_ID_UNKNOWN       = '99';
+    const MODULE_ID_BALANCE_PAY   = '05';
+    
 
      static $MODULE_OPTIONS = array(
+        self::MODULE_ID_UNKNOWN,
         self::MODULE_ID_RECHARGE,
         self::MODULE_ID_PAY,
         self::MODULE_ID_CASH,
         self::MODULE_ID_REFUND,
-        self::MODULE_ID_UNKNOWN,
+        self::MODULE_ID_BALANCE_PAY,
     );
 
     static $MODULE_ID_CONF = array(
+    	self::MODULE_ID_UNKNOWN=>array(
+            'NAME'=>'未知业务',
+        ),
         self::MODULE_ID_RECHARGE=>array(
             'NAME'=>'充值',
         ),
@@ -53,8 +59,8 @@ class SnSvc
         self::MODULE_ID_REFUND=>array(
             'NAME'=>'退款',
         ),
-        self::MODULE_ID_UNKNOWN=>array(
-            'NAME'=>'未知业务',
+        self::MODULE_ID_BALANCE_PAY=>array(
+            'NAME'=>'余额支付',
         ),
     );
 

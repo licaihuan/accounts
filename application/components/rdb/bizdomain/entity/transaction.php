@@ -24,18 +24,25 @@ class Transaction extends Entity
 	const BTYPE_REFUND      = 11;
 	const BTYPE_CASH		= 12;
 	const BTYPE_RECHARGE    = 15;
+	const BTYPE_PAY_INFO_FEE             = 16;
+	const BTYPE_PAY_SHIPPING_FEE         = 17;
+	
 
 	static $BTYPE_CONF = array(
 		self::BTYPE_UNKNOWN =>array('NAME'=>'未知'),
 		self::BTYPE_REFUND =>array('NAME'=>'退款'),
 		self::BTYPE_CASH =>array('NAME'=>'取现'),
-		self::BTYPE_RECHARGE =>array('NAME'=>'充值'),
+		self::BTYPE_RECHARGE =>array('NAME'=>'充值'),	
+		self::BTYPE_PAY_INFO_FEE =>array('NAME'=>'支付信息费'),
+		self::BTYPE_PAY_SHIPPING_FEE =>array('NAME'=>'支付运输费'),
 	);
 
 	static $BTYPE_OPTIONS = array(
 		self::BTYPE_REFUND,
 		self::BTYPE_CASH,
 		self::BTYPE_RECHARGE,
+		self::BTYPE_PAY_INFO_FEE,
+		self::BTYPE_PAY_SHIPPING_FEE,
 	);
 
 	const TYPE_IN  	 	  = 1;

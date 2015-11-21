@@ -36,12 +36,23 @@ class ErrorSvc
     const ERR_TRANSACTION_RESPONSE_REPEAT = '2002';
     const ERR_ACCOUNTS_BALANCE_SHORTAGE   = '2003';
     const ERR_RESPONSE_NOT_MACHED  = '2004';
+    
     const ERR_UNFREEZE_FAIL  = '2005';
 
     static $MSG = array(
-		self::ERR_INSERT_FAIL			=>'ERR_INSERT_FAIL',
-		self::ERR_BUSY					=>'ERR_BUSY',
-		self::ERR_NOT_FOUND				=>'ERR_NOT_FOUND',
+		self::ERR_INSERT_FAIL			=>'写入错误',
+		self::ERR_BUSY					=>'系统繁忙',
+		self::ERR_NOT_FOUND				=>'数据不存在',
+		
+		
+		self::ERR_ACCOUNTS_NOT_FOUND       		 	  =>'账户不存在',
+		self::ERR_TRANSACTION_NOT_FOUND    		 	  =>'交易记录不存在',
+		self::ERR_TRANSACTION_RESPONSE_REPEAT   	  =>'操作回放被拒绝',
+		self::ERR_ACCOUNTS_BALANCE_SHORTAGE   		  =>'账户余额不足',
+		self::ERR_RESPONSE_NOT_MACHED				  =>'第三方响应数据不匹配',
+		
+		self::ERR_UNFREEZE_FAIL						  =>'冻结资金失败',
+		
 
     );
 

@@ -147,6 +147,18 @@ class LoaderSvc
         ObjectFinder::register( 'DBCache', $obj );
         return $obj;
     }/*}}}*/
+    
+    public static function loadPayChannel($channel)
+    {/*{{{*/
+    	$obj = ObjectFinder::find($channel);
+        if ( is_object( $obj ) )
+        {
+            return $obj;
+        }
+    	$obj = new $channel();
+        ObjectFinder::register( $channel, $obj );
+        return $obj;
+    }/*}}}*/
 
 	
 
