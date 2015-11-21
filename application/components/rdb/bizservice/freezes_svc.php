@@ -4,7 +4,7 @@ class FreezesSvc
 	const OBJ = 'Freezes';
 	static public function add($param)
 	{
-		$obj = Accountingrecord::createByBiz($param);
+		$obj = Freezes::createByBiz($param);
 		return self::getDao()->add($obj);
 	}
 

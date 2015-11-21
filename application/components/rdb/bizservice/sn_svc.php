@@ -32,7 +32,7 @@ class SnSvc
     const MODULE_ID_CASH          = '03';
     const MODULE_ID_REFUND        = '04';
     const MODULE_ID_BALANCE_PAY   = '05';
-    
+    const MODULE_ID_TRANSFERS     = '06';
 
      static $MODULE_OPTIONS = array(
         self::MODULE_ID_UNKNOWN,
@@ -41,6 +41,7 @@ class SnSvc
         self::MODULE_ID_CASH,
         self::MODULE_ID_REFUND,
         self::MODULE_ID_BALANCE_PAY,
+        self::MODULE_ID_TRANSFERS,
     );
 
     static $MODULE_ID_CONF = array(
@@ -61,6 +62,9 @@ class SnSvc
         ),
         self::MODULE_ID_BALANCE_PAY=>array(
             'NAME'=>'余额支付',
+        ),
+        self::MODULE_ID_TRANSFERS=>array(
+        	'NAME'=>'转账',
         ),
     );
 

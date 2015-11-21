@@ -45,7 +45,7 @@ class Freezes extends Entity
 		$obj->remark = is_null($param['remark']) ? '' : $param['remark'];
 		$obj->cat = in_array($param['cat'],self::$CAT_OPTIONS) ? $param['cat'] : self::CAT_CASH;
 		$obj->state = in_array($param['state'],self::$STATE_OPTIONS) ? $param['state'] : self::STATE_FREEZE_IN;
-		$obj->ip = is_null($param['ip']) ? UtilsSvc::getClientIP() : $param['ip'];
+		$obj->ip = is_null($param['ip']) ? UtlsSvc::getClientIP() : $param['ip'];
 		return $obj;
 	}
 }

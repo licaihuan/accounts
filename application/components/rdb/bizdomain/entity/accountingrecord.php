@@ -20,12 +20,16 @@ class Accountingrecord extends Entity
 	const CAT_CASH		     = 12;
 	const CAT_RECHARGE       = 13;
 	const CAT_BALANCE_PAY    = 14;
+	const CAT_TRANSFERS_OUT    = 15;
+	const CAT_TRANSFERS_IN    = 16;
 
 	static $CAT_OPTIONS = array(
 		self::CAT_REFUND,
 		self::CAT_CASH,
 		self::CAT_RECHARGE,
 		self::CAT_BALANCE_PAY,
+		self::CAT_TRANSFERS_OUT,
+		self::CAT_TRANSFERS_IN,
 	);
 
 	static $CAT_CONF = array(
@@ -33,6 +37,8 @@ class Accountingrecord extends Entity
 		self::CAT_CASH =>array('NAME'=>'取现'),
 		self::CAT_RECHARGE =>array('NAME'=>'充值'),
 		self::CAT_BALANCE_PAY =>array('NAME'=>'余额支付'),
+		self::CAT_TRANSFERS_OUT =>array('NAME'=>'余额转出'),
+		self::CAT_TRANSFERS_IN =>array('NAME'=>'余额转入'),
 	);
 	
 	const FROM_SYS         = 11;

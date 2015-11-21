@@ -118,7 +118,8 @@ class AccountsController extends ApibaseController
         $uid = $this->uid;
         $ret = $this->initOutPut();
         $accountinfo = AccountsSvc::getAccountsInfo($uid);
-        $amount = sprinf("%.2f",(RequestSvc::Request('amount',0)));
+        
+        $amount = sprintf("%.2f",(RequestSvc::Request('amount',0)));
    		if($amount <= 0){
     		$ret['errno'] = '50103';
     		$this->outPut($ret);
@@ -129,30 +130,57 @@ class AccountsController extends ApibaseController
     		$this->outPut($ret);
     	}
     	
-    	$sn = SnSvc::createSerialNum(SnSvc::CHANNEL_ID_MOBILE,SnSvc::MODULE_ID_CASH);
-    	$params = array(
-    		'orderid'=>$sn,
-    		'btype'=>Transaction::BTYPE_CASH,
-    		'uid'=>$this->uid,
-    		'type'=>Transaction::TYPE_OUT,
-    		'amount'=>$amount,
-    	);
-    	$r = TransactionSvc::addTrans($params);
-    	if(!$r){
+    	$orderid = SnSvc::createSerialNum(SnSvc::CHANNEL_ID_MOBILE,SnSvc::MODULE_ID_CASH);
+	    $params = array(
+	    	'orderid'=>$orderid,
+	    	'btype'=>Transaction::BTYPE_CASH,
+	    	'uid'=>$uid,
+	    	'type'=>Transaction::TYPE_OUT,
+	    	'amount'=>$amount,
+	    );
+	    $r = TransactionSvc::addTrans($params);
+		if(!$r){
+      	    $data = array_merge($response,$params);
+      		LogSvc::fileLog('Freezes_Transid_Create_Fail['.__CLASS__.'_'.'__FUNCTION__'.']',$data);
     		$ret['errno'] = '50104';
     		$this->outPut($ret);
-    	}
+		}
+    	$accountinfo = AccountsSvc::getByUidAndCat($uid);
+        $accountid = $accountinfo['id'];
     	$transid = $r;
     	$cat = Accountingrecord::CAT_CASH;
     	$remark = '客户取现';
+    
         $response = AccountsSvc::freezes($accountid,$amount,$cat,$remark,$transid);
-        if($response['e'] != ErrorSvc::Err_OK){
-        	 $msg = ErrorSvc::getMsg($response['e']);
+        if($response['e'] != ErrorSvc::ERR_OK){
+        	 TransactionSvc::setProcessResult($orderid,Transaction::STATE_FAIL);
         	 $ret['errno'] = '50108';
-        	 $ret['msg'] = $msg;
+        	 $ret['msg'] = ErrorSvc::getMsg($response['e']);
+        }else{
+        	 TransactionSvc::setProcessResult($orderid,Transaction::STATE_PROCESSING);
+        	 $ret['msg'] = '取现申请提交成功，等待审核处理';
         }
+        
         $this->outPut($ret);
     }/*}}}*/
+    
+    public function testAction()
+    {
+    	/*
+    	$freezesid = RequestSvc::Request('freezesid');
+    	$ret = AccountsSvc::unfreeze($freezesid);
+    	var_dump($ret);
+    	*/
+    	
+    	$uid = '18310293307';
+    	$accountinfo = AccountsSvc::transfers(8,9,1);
+    	var_dump($accountinfo);
+    	
+    	
+    }
+    
+    
+    
     
     
     

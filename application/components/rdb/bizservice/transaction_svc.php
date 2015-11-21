@@ -19,8 +19,23 @@ class TransactionSvc
 
 	static public function updateById($id,$param)
 	{
-		return self::getDao()->updateById($id,$param,self::OBJ);
+		$obj = self::getById($id);
+		if(is_object($obj)){
+			$orderid = $obj->orderid;
+			$r = self::getOrderLock($orderid);
+			if($r){
+				return self::getDao()->updateById($id,$param,self::OBJ);
+			}
+			self::releaseOrderLock($orderid); 
+		}
+		return false;
 	}
+	
+    public static function setProcessResult($orderid,$state)
+    {
+    	$result = TransactionSvc::getByOrderid($orderid);
+		return TransactionSvc::updateById($result['id'],array('state'=>$state));
+    }
 
 	static private function getDao()
 	{
@@ -156,7 +171,7 @@ class TransactionSvc
 		$btype = $param['btype'];
 		$uid = $param['uid'];
 		$remark = isset($param['remark']) ? $param['remark'] : '';
-		$fee = isset($param['fee']) ? sprinf("%.2f",$param['fee']) : 0;
+		$fee = isset($param['fee']) ? sprintf("%.2f",$param['fee']) : 0;
 		
 		if(strlen($orderid) == 0) return false;
 		
@@ -180,9 +195,9 @@ class TransactionSvc
 		);
 		
 		if($param['type'] == Transaction::TYPE_IN){
-			$params['tin'] = sprinf("%.2f",$param['amount']);
+			$params['tin'] = sprintf("%.2f",$param['amount']);
 		}elseif($param['type'] == Transaction::TYPE_OUT){
-			$params['tout'] = sprinf("%.2f",$param['amount']);
+			$params['tout'] = sprintf("%.2f",$param['amount']);
 		}else{
 			self::releaseOrderLock($orderid);
 			return false;

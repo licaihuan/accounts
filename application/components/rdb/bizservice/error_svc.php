@@ -38,6 +38,7 @@ class ErrorSvc
     const ERR_RESPONSE_NOT_MACHED  = '2004';
     
     const ERR_UNFREEZE_FAIL  = '2005';
+    const ERR_ACCOUNTING_PROCESS_FAIL = '2006';
 
     static $MSG = array(
 		self::ERR_INSERT_FAIL			=>'写入错误',
@@ -51,8 +52,8 @@ class ErrorSvc
 		self::ERR_ACCOUNTS_BALANCE_SHORTAGE   		  =>'账户余额不足',
 		self::ERR_RESPONSE_NOT_MACHED				  =>'第三方响应数据不匹配',
 		
-		self::ERR_UNFREEZE_FAIL						  =>'冻结资金失败',
-		
+		self::ERR_UNFREEZE_FAIL						  =>'解冻资金失败',
+		self::ERR_ACCOUNTING_PROCESS_FAIL			  =>'帐务处理失败',
 
     );
 

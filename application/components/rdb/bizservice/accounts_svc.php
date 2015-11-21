@@ -179,6 +179,103 @@ class AccountsSvc
 	{
 		return self::getDao()->lockAccountsRecord($accountid);
 	}
+	
+	/**
+	 * @brief 内部转账
+	 */
+	static public function transfers($from,$to,$amount,$transid = '')
+	{
+		$ret = array(
+			'e'=>ERR_OK,
+		);
+		$r1 = self::getAccountsLock($from);
+		if(!$r1){
+			$ret['e'] = ErrorSvc::ERR_MYSQL_GET_LOCK;
+			return $ret;
+		}
+		$r2 = self::getAccountsLock($to);
+		if(!$r2){
+			self::releaseAccountsLock($from);
+			$ret['e'] = ErrorSvc::ERR_MYSQL_GET_LOCK;
+			return $ret;
+		}
+		
+		$result1 = self::lockAccountsRecord($from);
+		if(empty($result1)){
+			$ret = array(
+				'e'=>ErrorSvc::ERR_ACCOUNTS_NOT_FOUND,
+			);
+			self::releaseAccountsLock($from);
+			self::releaseAccountsLock($to);
+			return $ret;
+		}
+		
+		$result2 = self::lockAccountsRecord($to);
+		if(empty($result2)){
+			$ret = array(
+				'e'=>ErrorSvc::ERR_ACCOUNTS_NOT_FOUND,
+			);
+			self::releaseAccountsLock($from);
+			self::releaseAccountsLock($to);
+			return $ret;
+		}
+		
+		LoaderSvc::loadExecutor()->beginTrans();
+		
+		$obj1 = self::getById($from);
+		$balance1 = $obj1->balance - $amount;
+		if($balance1 < 0){
+			$ret['e'] = ErrorSvc::ERR_ACCOUNTS_BALANCE_SHORTAGE;
+			LoaderSvc::loadExecutor()->rollback();
+			return $ret;
+		}
+		$obj2 = self::getById($to);
+		$balance2 = $obj2->balance + $amount;
+		if(is_object($obj1) && is_object($obj2) && LoaderSvc::loadExecutor()->inTrans()){
+			$r3 = self::updateBalance($from,$balance1);
+			$r4 = self::updateBalance($to,$balance2);
+			if($r3 && $r4){
+				$transid = !empty($transid) ? $transid : SnSvc::createSerialNum(SnSvc::CHANNEL_ID_LOCAL,SnSvc::MODULE_ID_TRANSFERS);
+				//写入账务流水
+				$log1 = array(
+					'datetime'=>date('Y-m-d H:i:s'),
+					'accountid'=>$from,
+					'remark'=>'转账',
+					'cat'=>Accountingrecord::CAT_TRANSFERS_OUT,
+					'from'=>Accountingrecord::FROM_SYS,
+					'transid'=>$transid,
+					'uid'=>$obj1->uid,
+				    'out'=>$amount,
+					'balance'=>$balance1,
+					'type'=>Accountingrecord::TYPE_OUT,
+					'state'=>Accountingrecord::STATE_NORMAL,
+				);
+				$log2 = array(
+					'datetime'=>date('Y-m-d H:i:s'),
+					'accountid'=>$to,
+					'remark'=>'转账',
+					'cat'=>Accountingrecord::CAT_TRANSFERS_IN,
+					'from'=>Accountingrecord::FROM_SYS,
+					'transid'=>$transid,
+					'uid'=>$obj2->uid,
+					'in'=>$amount,
+					'balance'=>$balance2,
+					'type'=>Accountingrecord::TYPE_IN,
+					'state'=>Accountingrecord::STATE_NORMAL,
+				);
+				$r5 = AccountingrecordSvc::add($log1);
+				$r6 = AccountingrecordSvc::add($log2);
+				if($r5 && $r6){
+					LoaderSvc::loadExecutor()->commit();
+					return $ret;
+				}				
+			}
+		}
+		LoaderSvc::loadExecutor()->rollback();
+		LogSvc::fileLog(__CLASS_.'_'.__FUNCTION__,'[转账失败:'."账户A({$from}）->账户B({$to})=>金额({$amount})".']');
+		return array('e'=>ErrorSvc::ERR_ACCOUNTING_PROCESS_FAIL);
+		
+	}
 
     /**
 	 * @brief 资金解冻
@@ -301,6 +398,7 @@ class AccountsSvc
 							'cat'=>$cat,
 							'state'=>Freezes::STATE_FREEZE_IN,
 						);
+						
 						$r2 = FreezesSvc::add($freezesparams);
 						if($r1 && is_object($r2)){
 							LoaderSvc::loadExecutor()->commit();
@@ -480,8 +578,10 @@ class AccountsSvc
 
 							if($_type_ == Accountingrecord::TYPE_IN){
 								$log['in'] = $_amount_;
+								$log['type'] = Accountingrecord::TYPE_IN;
 							}else{
 								$log['out'] = $_amount_;
+								$log['type'] = Accountingrecord::TYPE_OUT;
 							}
 
 							$r3 = AccountingrecordSvc::add($log);
@@ -519,7 +619,9 @@ class AccountsSvc
 		);
 
 		//更新账户余额
-		$r = self::updateById($accountid,$params);
+		if(LoaderSvc::loadExecutor()->inTrans())
+			$r = self::updateById($accountid,$params);
+		else $r = 0;
 		return $r;
 	}
 
