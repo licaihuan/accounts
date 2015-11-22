@@ -95,7 +95,7 @@ class BaseDao
         $sql = 'insert '.$this->getTableName( $obj ).' ';
         $sql.= '( `'.implode( "`, `", $cols ).'` ) ';
         $sql.= 'values ';
-        $sql.= '( '.implode( ", ", $hold ).' ); ';
+        $sql.= '( '.implode( ", ", $hold ).' ); ';  
         return $this->getExecutor()->exeNoQuery( $sql, $vals );
     }/*}}}*/
 

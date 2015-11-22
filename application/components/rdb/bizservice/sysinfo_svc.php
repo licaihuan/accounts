@@ -6,12 +6,12 @@ class SysinfoSvc
 	static private function add( $param )
 	{
 		$obj = Sysinfo::createByBiz( $param );
-		return self::getDao()->add( $obj );
+		return self::getDao()->add($obj);
 	}
 
-	static public function log( $desc )
+	static public function log( $con )
 	{
-		self::add(array('desc'=>$desc));
+		return self::add(array('content'=>$con));
 	}
 	
 	static public function getById( $id = '0' )

@@ -173,8 +173,9 @@ class AccountsController extends ApibaseController
     	*/
     	
     	$uid = '18310293307';
-    	$accountinfo = AccountsSvc::transfers(8,9,1);
-    	var_dump($accountinfo);
+    	//$accountinfo = AccountsSvc::transfers(8,9,1);
+    	//var_dump($accountinfo);
+    	SysinfoSvc::log($uid);
     	
     	
     }

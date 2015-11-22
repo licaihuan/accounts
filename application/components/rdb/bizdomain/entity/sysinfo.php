@@ -8,7 +8,7 @@ class Sysinfo extends Entity
 		$cls = __CLASS__;
 		$obj = new $cls();
 		$obj->id = LoaderSvc::loadIdGenter()->create( self::ID_OBJ );
-		$obj->desc = isset($param['desc']) ? $param['desc'] : '';
+		$obj->content = isset($param['content']) ? $param['content'] : '';
 		$obj->ctime = date('Y-m-d H:i:s');
 		return $obj;
 	}
