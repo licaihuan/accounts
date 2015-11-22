@@ -39,13 +39,15 @@ class ErrorSvc
     
     const ERR_UNFREEZE_FAIL  = '2005';
     const ERR_ACCOUNTING_PROCESS_FAIL = '2006';
+    
+    const ERR_BIND_USER_FAIL = '3000';
+    const ERR_BIND_USER_EXIST = '3001';
 
     static $MSG = array(
 		self::ERR_INSERT_FAIL			=>'写入错误',
 		self::ERR_BUSY					=>'系统繁忙',
 		self::ERR_NOT_FOUND				=>'数据不存在',
-		
-		
+				
 		self::ERR_ACCOUNTS_NOT_FOUND       		 	  =>'账户不存在',
 		self::ERR_TRANSACTION_NOT_FOUND    		 	  =>'交易记录不存在',
 		self::ERR_TRANSACTION_RESPONSE_REPEAT   	  =>'操作回放被拒绝',
@@ -54,7 +56,9 @@ class ErrorSvc
 		
 		self::ERR_UNFREEZE_FAIL						  =>'解冻资金失败',
 		self::ERR_ACCOUNTING_PROCESS_FAIL			  =>'帐务处理失败',
-
+		self::ERR_BIND_USER_FAIL                      =>'绑定用户失败',
+		self::ERR_BIND_USER_EXIST					  =>'绑定用户已存在',
+		
     );
 
     //提现支付密码错误

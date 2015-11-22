@@ -8,15 +8,30 @@ class ApibaseController extends Yaf_Controller_Abstract
      */
     public function init()
     {/*{{{*/
-        $this->uid = '13526632621';
-        //$this->checkLogin();
+        $this->checkLogin();
+        $r = BindUserSvc::isDisabled($this->uid);
+        if($r){
+        	$ret = $this->initOutPut();
+	        $ret['errno'] = '50109';
+	        $this->outPut($ret);
+        }
     }/*}}}*/
 
     public function checkLogin()
     {/*{{{*/
-        $logininfo = UserModel::getLoginInfo();
+        //$logininfo = UserModel::getLoginInfo();
+        $logininfo = array(
+        	'tel'=>'18310293307',
+        );
         if(!empty($logininfo)){
-           $this->uid = $logininfo['tel'];
+           $mobile = trim($logininfo['tel']);
+           $uid = BindUserSvc::createUser($mobile);
+           if($uid) $this->uid = $uid;
+           else{
+           	   $ret = $this->initOutPut();
+	           $ret['errno'] = '50000';
+	           $this->outPut($ret);
+           }
         }else{
            $ret = $this->initOutPut();
            $ret['errno'] = '50101';
