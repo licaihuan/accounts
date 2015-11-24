@@ -91,6 +91,8 @@ class Transaction extends Entity
 		$obj->btype = in_array($param['btype'],self::$BTYPE_OPTIONS) ? $param['btype'] : self::BTYPE_UNKNOWN;
 		$obj->state = in_array($param['state'],self::$STATE_OPTIONS) ? $param['state'] : self::STATE_INIT;
 		$obj->sstate = in_array($param['sstate'],self::$SSTATE_OPTIONS) ? $param['sstate'] : self::SSTATE_UNSETTLED;
+		$obj->channelid = is_null($param['channelid']) ? PayChannel::CHANNEL_UNKNOWN : $param['channelid'];
+		$obj->tradeno = is_null($param['tradeno']) ? '' : $param['tradeno'];
 		return $obj;
 	}
 }

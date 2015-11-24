@@ -1,10 +1,11 @@
 <?php
 class AlipayHelper
-{
-	const PAY_STATE_SUCC = 'SUCC';
-	const PAY_STATE_FAIL = 'FAIL';
-	const PAY_STATE_PROCESSING = 'PROCESSING';
-
+{	
+	const TRADE_FINISHED = 'TRADE_FINISHED';
+	const TRADE_SUCCESS = 'TRADE_SUCCESS';
+	
+	const TRADE_UNKNOWN = 'TRADE_UNKNOWN';
+	
 	public static function responseSucc()
 	{
 		exit('SUCCESS');
@@ -14,5 +15,9 @@ class AlipayHelper
 	{
 		exit('FAIL');
 	}
+	
+	public static function 
+	
+	
 
 }

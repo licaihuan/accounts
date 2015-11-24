@@ -24,6 +24,10 @@ class TransactionSvc
 			$orderid = $obj->orderid;
 			$r = self::getOrderLock($orderid);
 			if($r){
+				if($obj->state == Transaction::STATE_SUCC){
+					self::releaseOrderLock($orderid);
+					return false;
+				}
 				return self::getDao()->updateById($id,$param,self::OBJ);
 			}
 			self::releaseOrderLock($orderid); 

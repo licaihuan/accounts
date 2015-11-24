@@ -433,21 +433,25 @@ class AccountsSvc
 	 *  $response 说明：
 	 *	'amount'=>1.00, //交易金额(不包含手续费)
 	 *  'fee'=>0.00，//手续费
-	 *	'out_trans_id'=>'',//第三方交易单号
+	 *	
 	 *
-	 *	 $accountid   账户ID
-	 *	 $transid     交易ID
-	 *	 $cat         业务类型
-	 *   $from        来源渠道
-	 *   $remark      备注
+	 *	 $accountid   账户ID      必选
+	 *	 $transid     交易ID      必选
+	 *	 $cat         业务类型     必选
+	 *   $from        一级渠道     必选
+	 *   $remark      备注        可选
+	 *   channelid    子渠道      必选
+	 *   tradeno      第三方交易号 必选
      *
 	 */
-	static public function accountingProcess($response,$accountid,$transid,$cat,$from,$remark = '')
+	static public function accountingProcess($response = array(),$accountid,$transid,$cat,$from,$remark = '')
 	{
 		$ret = array(
 			'e'=>ErrorSvc::ERR_OK,
 		);
 		
+		$channelid = $response['channelid']
+		$tradeno = $response['tradeno']
 		$_amount_ = sprintf("%.2f",$response['amount']);
 		$_fee_ = sprintf("%.2f",$response['fee']);
 		
@@ -554,6 +558,8 @@ class AccountsSvc
 							//更新交易状态
 							$transparams = array(
 								'state'=>Transaction::STATE_SUCC,
+							    'channelid'=>$channelid,
+								'tradeno'=>$tradeno,
 								'fee'=>$_fee_,
 							);
 

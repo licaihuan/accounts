@@ -12,43 +12,73 @@ class NotifyController extends ApibaseController
     * @date 2015-11-14
     * @return 
     */ 
-    public function alipayCallAction()
-    {/*{{{*/
+    public function alipayAction()
+    {/*{{{*/  	
+    	$channelAlipayMobileObj = new ChannelAlipayMobile;
+    	$ret = $channelAlipayMobileObj->processNotify ($_GET,$_POST,'php://input');
     	
-        $transid = RequestSvc::Request('transid','');
-        $state = 'SUCC';
+    	if($ret['e'] != ErrorSvc::ERR_OK){
+    		AlipayHelper::responseFail();
+    	}
+    	
+    	if($ret['data']['state'] == AlipayHelper::TRADE_FINISHED){
+    		AlipayHelper::responseSucc();
+    	}
+    	
+    	$transid = $ret['data']['transid'];
+    	$tradeno = $ret['data']['tradeno'];
          
         $obj = TransactionSvc::getById($transid);
-        if(!is_object($obj)) return;
-        if($obj->state == Transaction::STATE_SUCC){
-        	//AlipayHelper::responseSucc();
+        if(!is_object($obj)) {
+        	LogSvc::fileLog('Notify_'.__CLASS__.'.'.__METHOD__,"交易号[{$transid}]不存在");
+        	AlipayHelper::responseFail();
         }
+        if($obj->state == Transaction::STATE_SUCC){
+        	AlipayHelper::responseSucc();
+        }
+        
+        $_amount_ = $obj->tout > 0 ? $obj->tout ? $obj->tin;
+        if($_amount_ != $amount){
+        	LogSvc::fileLog('ERROR_'.__CLASS__.'.'.__FUNCTION__,"[amount:{$amount}]--[msg:金额不匹配]");
+        	AlipayHelper::responseFail();
+        }
+        
         $uid = $obj->uid;
         $accountinfo = AccountsSvc::getByUidAndCat($uid);
-        
-       
         if(empty($accountinfo)){
         	LogSvc::fileLog('ERROR_'.__CLASS__.'.'.__FUNCTION__,"[uid:{$uid}]--[msg:账户不存在]");
-        	exit(-1);
+        	AlipayHelper::responseFail();
         }
         $accountid = $accountinfo['id'];
-        if($state == AlipayHelper::PAY_STATE_SUCC){
+        
+        if($obj->btype == Transaction::BTYPE_RECHARGE){
         	$cat = Accountingrecord::CAT_RECHARGE;
-        	$from = Accountingrecord::FROM_ALIPAY;
-        	$remark = '测试';
-        	
+	        if($ret['data']['state'] == AlipayHelper::TRADE_SUCCESS){
+	        	$from = Accountingrecord::FROM_ALIPAY;
+	        	$remark = '测试';
+	        	
+	        	$params = array(
+	        		'tradeno'=>$tradeno,
+	        		'channelid'=>PayChannel::CHANNEL_ALIPAY,
+	        		'amount'=>sprintf("%.2f",$obj->amount),
+	        		'remark'=>$remark,
+	        	);
+	        	$ret = AccountsSvc::accountingProcess($params,$accountid,$transid,$cat,$from,$remark);
+	        	if($ret['e'] == ErrorSvc::ERR_OK){
+	        		AlipayHelper::responseSucc();
+	        	}
+	        }
+        }
+        //支付操作
+        else{
+        	//更新交易记录
         	$params = array(
-        		'out_trans_id'=>SnSvc::createSerialNum(),
-        		'fee'=>0,
-        		'amount'=>sprintf("%.2f",0.1),
-        		'remark'=>$remark,
+        		'state'=>Transaction::STATE_SUCC,
+        		'transno'=>$tradeno,
+        		'channelid'=>PayChannel::CHANNEL_ALIPAY,
         	);
-        	$ret = AccountsSvc::accountingProcess($params,$accountid,$transid,$cat,$from,$remark);
-        	if($ret['e'] == ErrorSvc::ERR_OK){
-        		AlipayHelper::responseSucc();
-        	}
-        	
-        	var_dump($ret);die;
+        	TransactionSvc::updateById($transid,$params)；
+        	AlipayHelper::responseSucc();
         }
         AlipayHelper::responseFail();
     }/*}}}*/

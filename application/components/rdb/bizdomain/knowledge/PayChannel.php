@@ -1,6 +1,7 @@
 <?php
 class PayChannel
 {
+	const CHANNEL_UNKNOWN = -1;
 	const CHANNEL_BALANCE_PAY = 1;
 	const CHANNEL_ALIPAY  = 2;
 	
@@ -15,6 +16,7 @@ class PayChannel
 			case self::CHANNEL_ALIPAY :
 				$cls = 'ChannelAliPay';
 				break;
+			case self::CHANNEL_UNKNOWN,
 			default:
 				break;
 		}
@@ -29,6 +31,7 @@ class PayChannel
 	static $STATE_CONF = array(
 		self::CHANNEL_BALANCE_PAY =>array('NAME'=>'余额支付'),
 		self::CHANNEL_ALIPAY =>array('NAME'=>'支付宝'),
+		self::CHANNEL_UNKNOWN =>array('NAME'=>'未知渠道'),
 	);
 	
 	public function getChannelIns($channel)

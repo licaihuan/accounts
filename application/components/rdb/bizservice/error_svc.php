@@ -42,6 +42,9 @@ class ErrorSvc
     
     const ERR_BIND_USER_FAIL = '3000';
     const ERR_BIND_USER_EXIST = '3001';
+    
+    //支付部分
+    const ERR_PAY_VERIFY_SIGN = '4001';
 
     static $MSG = array(
 		self::ERR_INSERT_FAIL			=>'写入错误',
@@ -58,6 +61,8 @@ class ErrorSvc
 		self::ERR_ACCOUNTING_PROCESS_FAIL			  =>'帐务处理失败',
 		self::ERR_BIND_USER_FAIL                      =>'绑定用户失败',
 		self::ERR_BIND_USER_EXIST					  =>'绑定用户已存在',
+		
+		self::ERR_PAY_VERIFY_SIGN					  =>'验证签名失败',
 		
     );
 
