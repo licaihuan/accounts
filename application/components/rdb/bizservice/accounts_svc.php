@@ -450,8 +450,8 @@ class AccountsSvc
 			'e'=>ErrorSvc::ERR_OK,
 		);
 		
-		$channelid = $response['channelid']
-		$tradeno = $response['tradeno']
+		$channelid = $response['channelid'];
+		$tradeno = $response['tradeno'];
 		$_amount_ = sprintf("%.2f",$response['amount']);
 		$_fee_ = sprintf("%.2f",$response['fee']);
 		

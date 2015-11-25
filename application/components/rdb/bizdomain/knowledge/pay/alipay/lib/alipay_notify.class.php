@@ -38,6 +38,8 @@ class AlipayNotify {
      * @return 验证结果
      */
 	function verifyNotify(){
+		$isSign = $this->getSignVeryfy($_POST, $_POST["sign"]);
+		
 		if(empty($_POST)) {//判断POST来的数组是否为空
 			return false;
 		}
@@ -160,4 +162,3 @@ class AlipayNotify {
 		return $responseTxt;
 	}
 }
-?>

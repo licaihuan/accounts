@@ -8,16 +8,13 @@ class AlipayHelper
 	
 	public static function responseSucc()
 	{
-		exit('SUCCESS');
+		exit('success');
 	}
 	
 	public static function responseFail()
 	{
-		exit('FAIL');
+		exit('fail');
 	}
-	
-	public static function 
-	
-	
+		
 
 }

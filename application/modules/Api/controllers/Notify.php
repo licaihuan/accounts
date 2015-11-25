@@ -38,7 +38,7 @@ class NotifyController extends ApibaseController
         	AlipayHelper::responseSucc();
         }
         
-        $_amount_ = $obj->tout > 0 ? $obj->tout ? $obj->tin;
+        $_amount_ = $obj->tout > 0 ? $obj->tout : $obj->tin;
         if($_amount_ != $amount){
         	LogSvc::fileLog('ERROR_'.__CLASS__.'.'.__FUNCTION__,"[amount:{$amount}]--[msg:金额不匹配]");
         	AlipayHelper::responseFail();

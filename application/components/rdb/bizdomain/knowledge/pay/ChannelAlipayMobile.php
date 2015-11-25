@@ -10,9 +10,12 @@ class ChannelAlipayMobile extends ChannelBasePay
     			'state'=>AlipayHelper::TRADE_UNKNOWN,
     		),
     	);
-    	LogSvc::fileLog('Notify_'.__CLASS__.'_'.__METHOD__,$post);
+    	
+    	LogSvc::fileLog('Notify_'.__CLASS__.'_'.__FUNCTION__,$post);
    		$alipayNotify = new AlipayNotify(AlipayConfig::init());
+   		
 		$verify_result = $alipayNotify->verifyNotify();
+		
 		if($verify_result){
 			//商户订单号
 			$out_trade_no = $_POST['out_trade_no'];
