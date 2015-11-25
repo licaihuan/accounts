@@ -1,0 +1,20 @@
+{
+  "name": "apidoc-front",
+  "version": "",
+  "description": "这是交易中心的业务接口",
+  "title": "zhongchou frontapi",
+  "url" : "",
+  "sampleUrl": "",
+  "header": {
+    "title": "文档描述",
+    "filename": "header.md"
+  },
+  "footer": {
+    "title": "",
+    "filename": ""
+  },
+  "template": {
+  	"withCompare": true,
+  	"withGenerator": true
+  }
+}

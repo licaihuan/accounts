@@ -27,6 +27,7 @@ class NotifyController extends ApibaseController
     	
     	$transid = $ret['data']['transid'];
     	$tradeno = $ret['data']['tradeno'];
+		$amount = $ret['data']['amount'];
          
         $obj = TransactionSvc::getById($transid);
         if(!is_object($obj)) {
@@ -60,7 +61,7 @@ class NotifyController extends ApibaseController
 	        	$params = array(
 	        		'tradeno'=>$tradeno,
 	        		'channelid'=>PayChannel::CHANNEL_ALIPAY,
-	        		'amount'=>sprintf("%.2f",$obj->amount),
+	        		'amount'=>$_amount_,
 	        		'remark'=>$remark,
 	        	);
 	        	$ret = AccountsSvc::accountingProcess($params,$accountid,$transid,$cat,$from,$remark);
@@ -77,7 +78,7 @@ class NotifyController extends ApibaseController
         		'transno'=>$tradeno,
         		'channelid'=>PayChannel::CHANNEL_ALIPAY,
         	);
-        	TransactionSvc::updateById($transid,$params)；
+        	TransactionSvc::updateById($transid,$params);
         	AlipayHelper::responseSucc();
         }
         AlipayHelper::responseFail();

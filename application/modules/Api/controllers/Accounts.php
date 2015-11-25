@@ -5,13 +5,18 @@
  */
 class AccountsController extends ApibaseController
 {
-    /** 
-    * @brief 账户预览
-    * 
-    * @author liuweidong
-    * @date 2015-11-14
-    * @return 
-    */ 
+	/**
+	 * @apiVersion 1.0.0
+	 * @apiGroup Accounts
+	 * @api {post} /api/accounts/preview 账户预览
+	 *
+	 * @apiSuccess (data) {number} balnace 可用余额
+	 * @apiSuccess (data) {number} freezes 冻结总额
+	 * @apiSuccess (data) {number} total   账户总额
+	 *
+	 * @apiUse mySuccArr
+	 * @apiUse myErrRet
+	 */
     public function previewAction()
     {/*{{{*/
         $uid = $this->uid;
@@ -20,14 +25,19 @@ class AccountsController extends ApibaseController
         $ret['data'] = $accountinfo;
         $this->outPut($ret);
     }/*}}}*/
-    
-    /** 
-    * @brief 交易明细
-    * 
-    * @author liuweidong
-    * @date 2015-11-14
-    * @return 
-    */ 
+
+	/**
+	 * @apiVersion 1.0.0
+	 * @apiGroup Accounts
+	 * @api {post} /api/accounts/transaction 交易明细
+	 * @apiParam {Number} page 当前第几页
+	 * @apiParam {Number} len  分页显示条目数
+	 *
+	 * @apiSuccess (data) 略
+	 *
+	 * @apiUse mySuccArr
+	 * @apiUse myErrRet
+	 */
     public function transactionAction()
     {/*{{{*/
         $uid = $this->uid;
@@ -39,14 +49,19 @@ class AccountsController extends ApibaseController
         $ret['data'] = $results;
         $this->outPut($ret);
     }/*}}}*/
-    
-    /** 
-    * @brief 帐务明细
-    * 
-    * @author liuweidong
-    * @date 2015-11-14
-    * @return 
-    */ 
+
+	/**
+	 * @apiVersion 1.0.0
+	 * @apiGroup Accounts
+	 * @api {post} /api/accounts/details 帐务明细
+	 * @apiParam {Number} page 当前第几页
+	 * @apiParam {Number} len  分页显示条目数
+	 *
+	 * @apiSuccess (data) 略
+	 *
+	 * @apiUse mySuccArr
+	 * @apiUse myErrRet
+	 */
     public function detailsAction()
     {/*{{{*/
         $uid = $this->uid;
@@ -58,15 +73,21 @@ class AccountsController extends ApibaseController
         $ret['data'] = $results;
         $this->outPut($ret);
     }/*}}}*/
-    
 
-    /** 
-    * @brief 账户充值
-    * 
-    * @author liuweidong
-    * @date 2015-11-14
-    * @return 
-    */ 
+	/**
+	 * @apiVersion 1.0.0
+	 * @apiGroup Accounts
+	 * @api {post} /api/accounts/recharge 账户充值
+	 * @apiParam {Number} orderid 订单号
+	 * @apiParam {Number} amount  充值金额，保留两位小数，精确到分（如：25.06）
+	 *paydata
+	 * @apiSuccess (data) {number} transid  支付交易号
+	 * @apiSuccess (data) {paydata[]} paydata 明细
+	 * @apiSuccess (data) {paydata[]} ..
+	 *
+	 * @apiUse mySuccArr
+	 * @apiUse myErrRet
+	 */
     public function rechargeAction()
     {/*{{{*/   
     	$ret = $this->initOutPut();
@@ -104,15 +125,18 @@ class AccountsController extends ApibaseController
     	);
     	$this->outPut($ret);
     }/*}}}*/
-    
-    
-    /** 
-    * @brief 取现申请
-    * 
-    * @author liuweidong
-    * @date 2015-11-14
-    * @return 
-    */ 
+
+	/**
+	 * @apiVersion 1.0.0
+	 * @apiGroup Accounts
+	 * @api {post} /api/accounts/cash 取现申请
+	 * @apiParam {Number} amount  取现金额
+	 *
+	 * @apiSuccess (data) 略
+	 *
+	 * @apiUse mySuccArr
+	 * @apiUse myErrRet
+	 */
     public function cashAction()
     {/*{{{*/
         $uid = $this->uid;
