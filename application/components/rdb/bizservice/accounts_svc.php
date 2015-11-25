@@ -2,7 +2,7 @@
 class AccountsSvc
 {/*{{{*/
 	const OBJ = 'Accounts';
-	private function add($param)
+	private static function add($param)
 	{
 		$obj = Accounts::createByBiz($param);
 		return self::getDao()->add($obj);
@@ -22,14 +22,14 @@ class AccountsSvc
 		return $r;
 	}
 
-	private function releaseAccountsLock($accountid)
+	private static function releaseAccountsLock($accountid)
 	{
 		$lock = 'ACCOUNTS_'.$accountid;
 		$r = MysqlSvc::releaseLock($lock);
 		return $r;
 	}
 
-	private function getAccountsLock($accountid)
+	private static function getAccountsLock($accountid)
 	{
 		$lock = 'ACCOUNTS_'.$accountid;
 		$r = MysqlSvc::getLock($lock);

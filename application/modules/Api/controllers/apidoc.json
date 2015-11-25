@@ -1,13 +1,13 @@
 {
-  "name": "apidoc-front",
+  "name": "apidoc-Accounts",
   "version": "",
-  "description": "这是交易中心的业务接口",
-  "title": "zhongchou frontapi",
+  "description": "账户接口文档",
+  "title": "账户接口文档",
   "url" : "",
   "sampleUrl": "",
   "header": {
     "title": "文档描述",
-    "filename": "header.md"
+    "filename": ""
   },
   "footer": {
     "title": "",
