@@ -88,7 +88,7 @@ class AccountsController extends ApibaseController
     {/*{{{*/   
     	$ret = $this->initOutPut();
     	$orderid = RequestSvc::Request('orderid','');
-    	$amount = sprinf("%.2f",(RequestSvc::Request('amount',0)));
+    	$amount = sprintf("%.2f",(RequestSvc::Request('amount',0)));
     	if(empty($orderid)){
     		$ret['errno'] = '50102';
     		$this->outPut($ret);
