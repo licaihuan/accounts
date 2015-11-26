@@ -10,9 +10,9 @@ class AccountsController extends ApibaseController
 	 * @apiGroup Accounts
 	 * @api {get} /api/accounts/preview 账户预览
 	 *
-	 * @apiSuccess (data[]) {number} balnace 可用余额
-	 * @apiSuccess (data[]) {number} freezes 冻结总额
-	 * @apiSuccess (data[]) {number} total   账户总额
+	 * @apiSuccess (data) {number} balnace 可用余额
+	 * @apiSuccess (data) {number} freezes 冻结总额
+	 * @apiSuccess (data) {number} total   账户总额
 	 *
 	 * @apiUse mySuccArr
 	 * @apiUse myErrRet
@@ -89,7 +89,8 @@ class AccountsController extends ApibaseController
 	 * @api {post} /api/accounts/recharge 账户充值
 	 * @apiParam {Number} amount  充值金额，保留两位小数，精确到分（如：25.06）
 	 * @apiParam {String} [paychannel] 支付渠道 (2-支付宝移动支付)
-	 * @apiSuccess (data[]) {Number} transid  支付交易号
+	 * @apiSuccess (data) {Number} transid  支付交易号
+	 * @apiSuccess (data) {[]} data  支付渠道相关数据
 	 * 
 	 * @apiUse mySuccArr
 	 * @apiUse myErrRet
