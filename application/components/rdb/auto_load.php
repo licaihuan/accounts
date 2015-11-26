@@ -26,6 +26,8 @@ function auto_load($classname)
 		"ChannelAlipayMobile" => "/home/liuweidong/htdocs/accounts/application/components/rdb/bizdomain/knowledge/pay/ChannelAlipayMobile.php",
 		"ChannelBalancePay" => "/home/liuweidong/htdocs/accounts/application/components/rdb/bizdomain/knowledge/pay/ChannelBalancePay.php",
 		"ChannelBasePay" => "/home/liuweidong/htdocs/accounts/application/components/rdb/bizdomain/knowledge/pay/ChannelBasePay.php",
+		"AlipayConfig" => "/home/liuweidong/htdocs/accounts/application/components/rdb/bizdomain/knowledge/pay/alipay/alipay.config.php",
+		"AlipayNotify" => "/home/liuweidong/htdocs/accounts/application/components/rdb/bizdomain/knowledge/pay/alipay/lib/alipay_notify.class.php",
 		"BindUserSvc" => "/home/liuweidong/htdocs/accounts/application/components/rdb/bizservice/BindUser_svc.php",
 		"AccountingrecordSvc" => "/home/liuweidong/htdocs/accounts/application/components/rdb/bizservice/accountingrecord_svc.php",
 		"AccountsSvc" => "/home/liuweidong/htdocs/accounts/application/components/rdb/bizservice/accounts_svc.php",
