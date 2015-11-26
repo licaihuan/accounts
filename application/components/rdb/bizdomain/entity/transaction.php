@@ -85,7 +85,7 @@ class Transaction extends Entity
 		$obj->tout = is_null($param['tout']) ? 0 : (double)$param['tout'];
 		$obj->fee = is_null($param['fee']) ? 0 : (double)$param['fee'];
 		$obj->type = in_array($param['type'],self::$TYPE_OPTIONS) ? $param['type'] : self::TYPE_IN;
-		$obj->datetime = is_null($param['datetime']) ? '0000-00-00 00:00:00' : $param['datetime'];
+		$obj->datetime = !isset($param['datetime']) ? date('Y-m-d H:i:s') : $param['datetime'];
 		$obj->uid = is_null($param['uid']) ? -1 : $param['uid'];
 		$obj->remark = is_null($param['remark']) ? '' : $param['remark'];
 		$obj->btype = in_array($param['btype'],self::$BTYPE_OPTIONS) ? $param['btype'] : self::BTYPE_UNKNOWN;

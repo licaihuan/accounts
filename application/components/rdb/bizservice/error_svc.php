@@ -39,6 +39,8 @@ class ErrorSvc
     
     const ERR_UNFREEZE_FAIL  = '2005';
     const ERR_ACCOUNTING_PROCESS_FAIL = '2006';
+    const ERR_FREEZE_RECORD_NOT_FOUND = '2007';
+    const ERR_UNFREEZE_STATE_EXCEPTION = '2008';
     
     const ERR_BIND_USER_FAIL = '3000';
     const ERR_BIND_USER_EXIST = '3001';
@@ -61,6 +63,9 @@ class ErrorSvc
 		self::ERR_ACCOUNTING_PROCESS_FAIL			  =>'帐务处理失败',
 		self::ERR_BIND_USER_FAIL                      =>'绑定用户失败',
 		self::ERR_BIND_USER_EXIST					  =>'绑定用户已存在',
+		self::ERR_FREEZE_RECORD_NOT_FOUND			  =>'冻结记录不存在',
+		
+		self::ERR_UNFREEZE_STATE_EXCEPTION            =>'解冻状态异常',
 		
 		self::ERR_PAY_VERIFY_SIGN					  =>'验证签名失败',
 		

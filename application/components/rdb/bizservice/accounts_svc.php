@@ -278,17 +278,26 @@ class AccountsSvc
 	}
 
     /**
-	 * @brief 资金解冻
+	 * @brief 资金解冻/解除
 	 */
-	static public function unfreeze($freezesid)
+	static public function unfreeze($freezesid,$state)
 	{
+
 		$ret = array(
 			'e'=>ErrorSvc::ERR_OK,
 		);
 		$obj = FreezesSvc::getById($freezesid);
+	
 		if(!is_object($obj)){
 			$ret = array(
-				'e'=>ErrorSvc::ERR_UNFREEZE_FAIL,
+				'e'=>ErrorSvc::ERR_FREEZE_RECORD_NOT_FOUND,
+			);
+			return $ret;
+		}
+		
+		if(!in_array($state,array(Freezes::STATE_DEFROSTED,Freezes::STATE_OVER))){
+			$ret = array(
+				'e'=>ErrorSvc::ERR_UNFREEZE_STATE_EXCEPTION,
 			);
 			return $ret;
 		}
@@ -318,13 +327,31 @@ class AccountsSvc
 						LoaderSvc::loadExecutor()->rollback();
 					}else{
 						$accountobj = self::getById($accountid);
-						$balance = $accountobj->balance + $obj->amount;
-						//更新账户余额
-						$r1 = self::updateBalance($accountid,$balance);
-
+						if($state == Freezes::STATE_DEFROSTED){
+							$balance = $accountobj->balance + $obj->amount;
+							//更新账户余额
+							$r1 = self::updateBalance($accountid,$balance);
+							
+							$param = array(
+								'state'=>Transaction::STATE_FAIL,
+							);
+						}elseif($state == Freezes::STATE_OVER){
+							$param = array(
+								'state'=>Transaction::STATE_SUCC,
+							);
+							
+							//为下面判断
+							$r1 = true;
+						}
+						
 						//更新冻结状态
-						$r2 = FreezesSvc::updateById($freezesid,array('state'=>Freezes::STATE_DEFROSTED));
-						if($r1 && $r2){
+						$r2 = FreezesSvc::updateById($freezesid,array('state'=>$state));
+						
+						//更新交易状态
+						$transid = $obj->transid;
+						$r3 = TransactionSvc::updateById($transid,$param);
+						
+						if($r1 && $r2 && $r3){
 							LoaderSvc::loadExecutor()->commit();
 						}else{
 							$ret = array(
@@ -428,21 +455,28 @@ class AccountsSvc
 	/**
      *
 	 * @brief 账务处理
+	 * （交易/帐务流水/账户表）
 	 *
-	 *
-	 *  $response 说明：
-	 *	'amount'=>1.00, //交易金额(不包含手续费)
-	 *  'fee'=>0.00，//手续费
+	 *  $response = array(
+	 		 //入账必须字段
+	 		'amount'=>1.00, //交易金额(不包含手续费)
+			'fee'=>0.00，//手续费
+			
+			
+			 以下字段为交易记录
+	         channelid    子渠道      必选
+	         tradeno      第三方交易号 必选
+		)
 	 *	
 	 *
 	 *	 $accountid   账户ID      必选
 	 *	 $transid     交易ID      必选
+	 *
+	 *   以下字段为帐务流水
 	 *	 $cat         业务类型     必选
 	 *   $from        一级渠道     必选
 	 *   $remark      备注        可选
-	 *   channelid    子渠道      必选
-	 *   tradeno      第三方交易号 必选
-     *
+	 *   
 	 */
 	static public function accountingProcess($response = array(),$accountid,$transid,$cat,$from,$remark = '')
 	{
@@ -566,7 +600,7 @@ class AccountsSvc
 							$r1 = TransactionSvc::updateById($transid,$transparams);
 							
 							//更新账户余额
-							$r2 = self::updateBalance($accountid,$balance);
+							$r2 = self::updateById($accountid,$balance);
 
 							//写入账务流水
 							$log = array(

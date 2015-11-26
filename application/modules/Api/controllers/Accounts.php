@@ -32,7 +32,7 @@ class AccountsController extends ApibaseController
 	 * @api {post} /api/accounts/transaction 交易明细
 	 * @apiParam {Number} page 当前第几页
 	 * @apiParam {Number} len  分页显示条目数
-	 *
+	 * @apiParam {Number} [state] 交易状态 (1-成功,2-处理中,3-失败)，此参数为空,表全部
 	 *
 	 * @apiUse mySuccArr
 	 * @apiUse myErrRet
@@ -40,11 +40,17 @@ class AccountsController extends ApibaseController
     public function transactionAction()
     {/*{{{*/
         $uid = $this->uid;
+        $request = array();
         $option = array(
         	'page'=>RequestSvc::Request('page',1),
         	'len'=>RequestSvc::Request('len',10),
         );
-        $results = TransactionSvc::getTransByUid($uid,array(),$option);
+        $request['state'] = RequestSvc::Request('state','');
+        $results = TransactionSvc::getTransByUid($uid,$request,$option);
+
+        foreach($results['record'] as &$row){
+        	$row['state_desc'] = Transaction::$STATE_CONF["{$row['state']}"]['NAME'];
+        }
         $ret['data'] = $results;
         $this->outPut($ret);
     }/*}}}*/
@@ -55,7 +61,7 @@ class AccountsController extends ApibaseController
 	 * @api {post} /api/accounts/details 帐务明细
 	 * @apiParam {Number} page 当前第几页
 	 * @apiParam {Number} len  分页显示条目数
-	 *
+	 * @apiParam {Number} [state] 交易状态 (1-成功,2-处理中,3-失败)，此参数为空,表全部
 	 *
 	 * @apiUse mySuccArr
 	 * @apiUse myErrRet
@@ -63,11 +69,16 @@ class AccountsController extends ApibaseController
     public function detailsAction()
     {/*{{{*/
         $uid = $this->uid;
+        $request = array();
         $option = array(
         	'page'=>RequestSvc::Request('page',1),
         	'len'=>RequestSvc::Request('len',10),
         );
-        $results = AccountingrecordSvc::getAccountsRecordByUid($uid,array(),$option);
+        $request['state'] = RequestSvc::Request('state','');
+        $results = AccountingrecordSvc::getAccountsRecordByUid($uid,$request,$option);
+        foreach($results['record'] as &$row){
+        	$row['state_desc'] = Accountingrecord::$STATE_CONF["{$row['state']}"]['NAME'];
+        }
         $ret['data'] = $results;
         $this->outPut($ret);
     }/*}}}*/
@@ -76,7 +87,6 @@ class AccountsController extends ApibaseController
 	 * @apiVersion 1.0.0
 	 * @apiGroup Accounts
 	 * @api {post} /api/accounts/recharge 账户充值
-	 * @apiParam {Number} orderid 订单号
 	 * @apiParam {Number} amount  充值金额，保留两位小数，精确到分（如：25.06）
 	 * @apiParam {String} [paychannel] 支付渠道 (2-支付宝移动支付)
 	 * @apiSuccess (data[]) {Number} transid  支付交易号
@@ -87,14 +97,10 @@ class AccountsController extends ApibaseController
     public function rechargeAction()
     {/*{{{*/   
     	$ret = $this->initOutPut();
-    	$orderid = RequestSvc::Request('orderid','');
+    	$orderid = SnSvc::createSerialNum(SnSvc::CHANNEL_ID_MOBILE,SnSvc::MODULE_ID_RECHARGE);
     	$amount = sprintf("%.2f",(RequestSvc::Request('amount',0)));
     	$paychannel = RequestSvc::Request('paychannel','');
     	
-    	if(empty($orderid)){
-    		$ret['errno'] = '50102';
-    		$this->outPut($ret);
-    	}
     	if($amount <= 0){
     		$ret['errno'] = '50103';
     		$this->outPut($ret);
@@ -103,8 +109,7 @@ class AccountsController extends ApibaseController
     		$ret['errno'] = '50105';
     		$this->outPut($ret);
     	}
-    	
-    	    	
+    		
     	$params = array(
     		'orderid'=>$orderid,
     		'btype'=>Transaction::BTYPE_RECHARGE,
@@ -117,7 +122,7 @@ class AccountsController extends ApibaseController
     		$ret['errno'] = '50104';
     		$this->outPut($ret);
     	}
-    	
+    	$transid = $r;
     	$payChannelObj = PayChannel::getChannelIns($paychannel);
     	$res = $payChannelObj->readyToPay($transid);
         $ret['data'] = array(
@@ -187,6 +192,43 @@ class AccountsController extends ApibaseController
         
         $this->outPut($ret);
     }/*}}}*/
+    
+    
+	/**
+	 * @apiVersion 1.0.0
+	 * @apiGroup Accounts
+	 * @api {post} /api/accounts/freezes 冻结流水
+	 * @apiParam {Number} page 当前第几页
+	 * @apiParam {Number} len  分页显示条目数
+	 *
+	 *
+	 * @apiUse mySuccArr
+	 * @apiUse myErrRet
+	 */
+    public function freezesAction()
+    {
+    	$uid = $this->uid;
+    	$ret = $this->initOutPut();
+		$accountinfo = AccountsSvc::getByUidAndCat($uid);
+        $accountid = $accountinfo['id'];
+  
+        $results = FreezesSvc::getFreezesByAccounts($accountid);
+        $ret['data'] = $results;
+        $this->outPut($ret);
+    	
+    }
+    
+    
+    public function testAction()
+    {
+    	//取现完成
+    	$freezeid = RequestSvc::Request('freezesid','');
+ 
+    	$ret = AccountsSvc::unfreeze($freezeid,Freezes::STATE_DEFROSTED);
+    	
+    	$this->outPut($ret);
+    }
+    
     
     
     

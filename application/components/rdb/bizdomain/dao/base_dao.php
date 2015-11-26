@@ -3,7 +3,6 @@ class BaseDao
 {/*{{{*/
     public function add( $obj = null )
     {/*{{{*/
-
         if ( empty( $obj ) || !is_object( $obj ) )
         {
             return false;
@@ -127,7 +126,6 @@ class BaseDao
 		$sql = "update ".strtolower( $cls )." set ";
 		$sql.= implode(',', $updkey);
 		$sql.= " where id=?";
-
 		return $this->getExecutor()->exeNoQuery( $sql, $updval );
 
 	}/*}}}*/

@@ -19,10 +19,10 @@ class ApibaseController extends Yaf_Controller_Abstract
 
     public function checkLogin()
     {/*{{{*/
-        $logininfo = UserModel::getLoginInfo();
+        //$logininfo = UserModel::getLoginInfo();
         
         //for test start
-        $tel = RequestSvc::Request('tel','');
+        $tel = RequestSvc::Request('tel','18510336321');
         if(UtlsSvc::checkMobile($tel)){
         	$logininfo['tel'] = $tel;
         }

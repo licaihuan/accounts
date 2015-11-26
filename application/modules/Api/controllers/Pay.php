@@ -25,7 +25,7 @@ class PayController extends ApibaseController
     public function doAction()
     {/*{{{*/
         $ret = $this->initOutPut();
-    	$orderid = RequestSvc::Request('orderid','');
+    	$orderid = RequestSvc::Request('orderid',SnSvc::createSerialNum());
     	$amount = sprintf("%.2f",(RequestSvc::Request('amount',0)));
     	
     	$paychannel = RequestSvc::Request('paychannel','');
@@ -52,7 +52,6 @@ class PayController extends ApibaseController
     		$ret['errno'] = '50106';
     		$this->outPut($ret);
     	}
-
     	$params = array(
     		'orderid'=>$orderid,
     		'btype'=>$btype,
@@ -86,6 +85,34 @@ class PayController extends ApibaseController
     
     	$this->outPut($ret);
     }/*}}}*/
+    
+     /**
+	 * @apiVersion 1.0.0
+	 * @apiGroup Pay
+	 * @api {get} /api/pay/channel 获取支付渠道
+	 * 
+	 * @apiSuccess (data) {[]} list 渠道信息
+	 * @apiSuccess (list[]) {Number} channelid 渠道号
+	 * @apiSuccess (list[]) {String} code  渠道代码
+	 * @apiSuccess (list[]) {String} name  渠道名称
+	 * 
+	 * @apiUse mySuccArr
+	 * @apiUse myErrRet
+	 */
+    public function channelAction()
+    {
+    	$ret = $this->initOutPut();
+    	$ret['data'] = array(
+    		array(
+    			'channelid'=>PayChannel::CHANNEL_ALIPAY_MOBILE,
+    			'code'=>PayChannel::getChannelCodeByChannelId(PayChannel::CHANNEL_ALIPAY_MOBILE),
+    			'name'=>PayChannel::getChannelNameByChannelId(PayChannel::CHANNEL_ALIPAY_MOBILE),
+    		),
+    	);
+    	
+    	//余额支付
+    	$this->outPut($ret);
+    }
    
 
 }

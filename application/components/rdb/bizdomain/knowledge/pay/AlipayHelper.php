@@ -1,6 +1,6 @@
 <?php
-require_once(__DIR__."/lib/alipay_core.function.php");
-require_once(__DIR__."/lib/alipay_rsa.function.php");
+require_once(__DIR__."/alipay/lib/alipay_core.function.php");
+require_once(__DIR__."/alipay/lib/alipay_rsa.function.php");
 
 class AlipayHelper
 {	

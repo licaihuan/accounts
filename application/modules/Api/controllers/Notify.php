@@ -30,8 +30,10 @@ class NotifyController extends ApibaseController
 		$amount = $ret['data']['amount'];
          
         $obj = TransactionSvc::getById($transid);
+        
+        
         if(!is_object($obj)) {
-        	LogSvc::fileLog('Notify_'.__CLASS__.'.'.__METHOD__,"交易号[{$transid}]不存在");
+        	LogSvc::fileLog('Notify_'.__CLASS__.'.'.__FUNCTION__,"交易号[{$transid}]不存在");
         	AlipayHelper::responseFail();
         }
         if($obj->state == Transaction::STATE_SUCC){
@@ -40,7 +42,7 @@ class NotifyController extends ApibaseController
         
         $_amount_ = $obj->tout > 0 ? $obj->tout : $obj->tin;
         if($_amount_ != $amount){
-        	LogSvc::fileLog('ERROR_'.__CLASS__.'.'.__FUNCTION__,"[amount:{$amount}]--[msg:金额不匹配]");
+        	LogSvc::fileLog('ERROR_'.__CLASS__.'.'.__FUNCTION__,"[transid:{$transid}]--[amount:{$amount}]--[msg:金额不匹配]");
         	AlipayHelper::responseFail();
         }
         
@@ -60,7 +62,7 @@ class NotifyController extends ApibaseController
 	        	
 	        	$params = array(
 	        		'tradeno'=>$tradeno,
-	        		'channelid'=>PayChannel::CHANNEL_ALIPAY,
+	        		'channelid'=>PayChannel::CHANNEL_ALIPAY_MOBILE,
 	        		'amount'=>$_amount_,
 	        		'remark'=>$remark,
 	        	);
@@ -75,10 +77,10 @@ class NotifyController extends ApibaseController
         	//更新交易记录
         	$params = array(
         		'state'=>Transaction::STATE_SUCC,
-        		'transno'=>$tradeno,
-        		'channelid'=>PayChannel::CHANNEL_ALIPAY,
+        		'tradeno'=>$tradeno,
+        		'channelid'=>PayChannel::CHANNEL_ALIPAY_MOBILE,
         	);
-        	TransactionSvc::updateById($transid,$params);
+        	$r = TransactionSvc::updateById($transid,$params);
         	AlipayHelper::responseSucc();
         }
         AlipayHelper::responseFail();

@@ -76,9 +76,9 @@ class FreezesSvc
 		return self::getDao()->getByAccountid($accountid,$state = '');
 	}
 
-	static public function getFreezes($accountid)
+	static public function getFreezesByAccounts($accountid)
 	{
-		return self::getDao()->getFreezes($accountid);
+		return self::getDao()->getFreezesByAccounts($accountid);
 	}
 
 	static public function getFreezesSum($accountid)

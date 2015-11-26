@@ -28,7 +28,10 @@ class TransactionSvc
 					self::releaseOrderLock($orderid);
 					return false;
 				}
-				return self::getDao()->updateById($id,$param,self::OBJ);
+				$param['utime'] = date('Y-m-d H:i:s');
+				$param['datetime'] = isset($param['datetime']) ? $param['datetime'] : date('Y-m-d H:i:s');
+				$r = self::getDao()->updateById($id,$param,self::OBJ);
+				return $r;
 			}
 			self::releaseOrderLock($orderid); 
 		}
