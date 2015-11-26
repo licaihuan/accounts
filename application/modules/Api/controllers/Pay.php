@@ -26,7 +26,7 @@ class PayController extends ApibaseController
     {/*{{{*/
         $ret = $this->initOutPut();
     	$orderid = RequestSvc::Request('orderid','');
-    	$amount = sprinf("%.2f",(RequestSvc::Request('amount',0)));
+    	$amount = sprintf("%.2f",(RequestSvc::Request('amount',0)));
     	
     	$paychannel = RequestSvc::Request('paychannel','');
     	$btype = RequestSvc::Request('btype','');
@@ -71,7 +71,7 @@ class PayController extends ApibaseController
     	$transid = $r;
         $payChannelObj = PayChannel::getChannelIns($paychannel);
         //账户余额支付
-        if($payChannelObj instanceof 'ChannelBalancePay'){
+        if($payChannelObj instanceof ChannelBalancePay){
         	$accountinfo = AccountsSvc::getByUidAndCat($this->uid);
         	$accountid = $accountinfo['id'];
         	$errno = $payChannelObj->pay($accountid,$transid,$amount);
