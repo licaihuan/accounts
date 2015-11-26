@@ -78,7 +78,7 @@ class AccountsController extends ApibaseController
 	 * @api {post} /api/accounts/recharge 账户充值
 	 * @apiParam {Number} orderid 订单号
 	 * @apiParam {Number} amount  充值金额，保留两位小数，精确到分（如：25.06）
-	 * @apiParam {String} [paychannel=2] 支付渠道 (2-支付宝移动支付)
+	 * @apiParam {String} [paychannel] 支付渠道 (2-支付宝移动支付)
 	 * @apiSuccess (data[]) {Number} transid  支付交易号
 	 * 
 	 * @apiUse mySuccArr
