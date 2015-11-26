@@ -78,7 +78,7 @@ class AccountsController extends ApibaseController
 	 * @api {post} /api/accounts/recharge 账户充值
 	 * @apiParam {Number} orderid 订单号
 	 * @apiParam {Number} amount  充值金额，保留两位小数，精确到分（如：25.06）
-	 *
+	 * @apiParam {String} [paychannel=2] 支付渠道 (2-支付宝移动支付)
 	 * @apiSuccess (data[]) {Number} transid  支付交易号
 	 * 
 	 * @apiUse mySuccArr
@@ -89,15 +89,21 @@ class AccountsController extends ApibaseController
     	$ret = $this->initOutPut();
     	$orderid = RequestSvc::Request('orderid','');
     	$amount = sprintf("%.2f",(RequestSvc::Request('amount',0)));
+    	$paychannel = RequestSvc::Request('paychannel','');
+    	
     	if(empty($orderid)){
     		$ret['errno'] = '50102';
     		$this->outPut($ret);
     	}
-    	
     	if($amount <= 0){
     		$ret['errno'] = '50103';
     		$this->outPut($ret);
     	}
+    	if(!in_array($paychannel,PayChannel::$RECHARGE_CHANNEL_OPTIONS)){
+    		$ret['errno'] = '50105';
+    		$this->outPut($ret);
+    	}
+    	
     	    	
     	$params = array(
     		'orderid'=>$orderid,
@@ -112,9 +118,11 @@ class AccountsController extends ApibaseController
     		$this->outPut($ret);
     	}
     	
-    	$ret['data'] = array(
+    	$payChannelObj = PayChannel::getChannelIns($paychannel);
+    	$res = $payChannelObj->readyToPay($transid);
+        $ret['data'] = array(
     		'transid'=>$r,
-    		'paydata'=>[],
+    		'data'=>$res['data'],
     	);
     	$this->outPut($ret);
     }/*}}}*/

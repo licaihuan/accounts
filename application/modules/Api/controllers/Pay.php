@@ -35,13 +35,11 @@ class PayController extends ApibaseController
     		$ret['errno'] = '50102';
     		$this->outPut($ret);
     	}
-    	
     	if($amount <= 0){
     		$ret['errno'] = '50103';
     		$this->outPut($ret);
     	}
-    	
-    	if(!in_array($paychannel,PayChannel::$CHANNEL_OPTIONS)){
+    	if(!in_array($paychannel,PayChannel::$PAY_CHANNEL_OPTIONS)){
     		$ret['errno'] = '50105';
     		$this->outPut($ret);
     	}
@@ -50,7 +48,6 @@ class PayController extends ApibaseController
     		Transaction::BTYPE_PAY_INFO_FEE,
     		Transaction::BTYPE_PAY_SHIPPING_FEE,
     	);
-    	
     	if(!in_array($btype,$btypes)){
     		$ret['errno'] = '50106';
     		$this->outPut($ret);
