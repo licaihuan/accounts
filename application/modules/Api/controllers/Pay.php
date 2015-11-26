@@ -16,8 +16,8 @@ class PayController extends ApibaseController
 	 * @apiParam {String} [btype]  业务类别 (16-支付信息费,17-支付运输费)
 	 * 
 	 * 
-	 * @apiSuccess (data[]) {Number} transid  支付交易号
-	 * @apiSuccess (data[]) {data} data  渠道相关数据
+	 * @apiSuccess (data) {Number} transid  支付交易号
+	 * @apiSuccess (data) {[]} data  渠道相关数据
 	 * 
 	 * @apiUse mySuccArr
 	 * @apiUse myErrRet
@@ -90,11 +90,10 @@ class PayController extends ApibaseController
 	 * @apiVersion 1.0.0
 	 * @apiGroup Pay
 	 * @api {get} /api/pay/channel 获取支付渠道
-	 * 
-	 * @apiSuccess (data) {[]} list 渠道信息
-	 * @apiSuccess (list[]) {Number} channelid 渠道号
-	 * @apiSuccess (list[]) {String} code  渠道代码
-	 * @apiSuccess (list[]) {String} name  渠道名称
+	 *
+	 * @apiSuccess (data[]) {Number} channelid 渠道号
+	 * @apiSuccess (data[]) {String} code  渠道代码
+	 * @apiSuccess (data[]) {String} name  渠道名称
 	 * 
 	 * @apiUse mySuccArr
 	 * @apiUse myErrRet
