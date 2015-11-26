@@ -67,14 +67,14 @@ class BindUserSvc
 		return $results;
 	}/*}}}*/
 	
-	private function getCreateUserLock($mobile)
+	private static function getCreateUserLock($mobile)
 	{
 		$lock = 'CREATE_USER_'.$mobile;
 		$r = MysqlSvc::getLock($lock);
 		return $r;
 	}
 
-	private function releaseCreateUserLock($mobile)
+	private static function releaseCreateUserLock($mobile)
 	{
 		$lock = 'CREATE_USER_'.$mobile;
 		$r = MysqlSvc::releaseLock($lock);

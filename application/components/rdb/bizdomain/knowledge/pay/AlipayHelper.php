@@ -1,4 +1,7 @@
 <?php
+require_once(__DIR__."/lib/alipay_core.function.php");
+require_once(__DIR__."/lib/alipay_rsa.function.php");
+
 class AlipayHelper
 {	
 	const TRADE_FINISHED = 'TRADE_FINISHED';
@@ -14,6 +17,13 @@ class AlipayHelper
 	public static function responseFail()
 	{
 		exit('fail');
+	}
+	
+	public static function sign($data,$private_key_path)
+	{
+		$data = argSort($data);
+		$data = createLinkstring($data);
+		return rsaSign($data, $private_key_path);
 	}
 		
 

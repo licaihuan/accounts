@@ -8,11 +8,11 @@ class AccountsController extends ApibaseController
 	/**
 	 * @apiVersion 1.0.0
 	 * @apiGroup Accounts
-	 * @api {post} /api/accounts/preview 账户预览
+	 * @api {get} /api/accounts/preview 账户预览
 	 *
-	 * @apiSuccess (data) {number} balnace 可用余额
-	 * @apiSuccess (data) {number} freezes 冻结总额
-	 * @apiSuccess (data) {number} total   账户总额
+	 * @apiSuccess (data[]) {number} balnace 可用余额
+	 * @apiSuccess (data[]) {number} freezes 冻结总额
+	 * @apiSuccess (data[]) {number} total   账户总额
 	 *
 	 * @apiUse mySuccArr
 	 * @apiUse myErrRet
@@ -33,7 +33,6 @@ class AccountsController extends ApibaseController
 	 * @apiParam {Number} page 当前第几页
 	 * @apiParam {Number} len  分页显示条目数
 	 *
-	 * @apiSuccess (data) 略
 	 *
 	 * @apiUse mySuccArr
 	 * @apiUse myErrRet
@@ -57,7 +56,6 @@ class AccountsController extends ApibaseController
 	 * @apiParam {Number} page 当前第几页
 	 * @apiParam {Number} len  分页显示条目数
 	 *
-	 * @apiSuccess (data) 略
 	 *
 	 * @apiUse mySuccArr
 	 * @apiUse myErrRet
@@ -80,11 +78,9 @@ class AccountsController extends ApibaseController
 	 * @api {post} /api/accounts/recharge 账户充值
 	 * @apiParam {Number} orderid 订单号
 	 * @apiParam {Number} amount  充值金额，保留两位小数，精确到分（如：25.06）
-	 *paydata
-	 * @apiSuccess (data) {number} transid  支付交易号
-	 * @apiSuccess (data) {paydata[]} paydata 明细
-	 * @apiSuccess (data) {paydata[]} ..
-	 *
+	 * @apiParam {String} [paychannel] 支付渠道 (2-支付宝移动支付)
+	 * @apiSuccess (data[]) {Number} transid  支付交易号
+	 * 
 	 * @apiUse mySuccArr
 	 * @apiUse myErrRet
 	 */
@@ -92,20 +88,23 @@ class AccountsController extends ApibaseController
     {/*{{{*/   
     	$ret = $this->initOutPut();
     	$orderid = RequestSvc::Request('orderid','');
-    	$amount = sprinf("%.2f",(RequestSvc::Request('amount',0)));
+    	$amount = sprintf("%.2f",(RequestSvc::Request('amount',0)));
+    	$paychannel = RequestSvc::Request('paychannel','');
+    	
     	if(empty($orderid)){
     		$ret['errno'] = '50102';
     		$this->outPut($ret);
     	}
-    	
     	if($amount <= 0){
     		$ret['errno'] = '50103';
     		$this->outPut($ret);
     	}
+    	if(!in_array($paychannel,PayChannel::$RECHARGE_CHANNEL_OPTIONS)){
+    		$ret['errno'] = '50105';
+    		$this->outPut($ret);
+    	}
     	
-    	//$sn = SnSvc::createSerialNum(SnSvc::CHANNEL_ID_MOBILE,SnSvc::MODULE_ID_RECHARGE);
-    	//echo $sn;die;
-    	
+    	    	
     	$params = array(
     		'orderid'=>$orderid,
     		'btype'=>Transaction::BTYPE_RECHARGE,
@@ -119,9 +118,11 @@ class AccountsController extends ApibaseController
     		$this->outPut($ret);
     	}
     	
-    	$ret['data'] = array(
+    	$payChannelObj = PayChannel::getChannelIns($paychannel);
+    	$res = $payChannelObj->readyToPay($transid);
+        $ret['data'] = array(
     		'transid'=>$r,
-    		'paydata'=>[],
+    		'data'=>$res['data'],
     	);
     	$this->outPut($ret);
     }/*}}}*/
@@ -132,7 +133,6 @@ class AccountsController extends ApibaseController
 	 * @api {post} /api/accounts/cash 取现申请
 	 * @apiParam {Number} amount  取现金额
 	 *
-	 * @apiSuccess (data) 略
 	 *
 	 * @apiUse mySuccArr
 	 * @apiUse myErrRet
@@ -187,23 +187,6 @@ class AccountsController extends ApibaseController
         
         $this->outPut($ret);
     }/*}}}*/
-    
-    public function testAction()
-    {
-    	/*
-    	$freezesid = RequestSvc::Request('freezesid');
-    	$ret = AccountsSvc::unfreeze($freezesid);
-    	var_dump($ret);
-    	*/
-    	
-    	$uid = '18310293307';
-    	//$accountinfo = AccountsSvc::transfers(8,9,1);
-    	//var_dump($accountinfo);
-    	SysinfoSvc::log($uid);
-    	
-    	
-    }
-    
     
     
     

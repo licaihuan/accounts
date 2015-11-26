@@ -1,7 +1,7 @@
 <?php  
     /**
      * @apiDefine myErrRet
-     * @apiSuccess {Number} code 错误码
+     * @apiSuccess {Number} errno 错误码
      * @apiSuccess {String} msg  错误信息
      * @apiErrorExample {json} Error-Response:
      * {"errno":"错误码","msg":"错误码解释"}
@@ -23,7 +23,7 @@
     
     /**
      * @apiDefine mySuccArr
-     * @apiSuccess {Number} code 错误码
+     * @apiSuccess {Number} errno 错误码
      * @apiSuccess {String} msg  错误信息
      * @apiSuccess {-} data 结果信息数据
      * @apiSuccessExample {json} Succ-Response:
@@ -32,7 +32,7 @@
     
     /**
      * @apiDefine mySuccList
-     * @apiSuccess {Number} code 错误码
+     * @apiSuccess {Number} errno 错误码
      * @apiSuccess {String} msg  错误信息
      * @apiSuccess {-} data 结果信息数据
      * 

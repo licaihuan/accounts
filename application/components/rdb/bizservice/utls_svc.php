@@ -334,36 +334,7 @@ class UtlsSvc
 		return $arr;
 	}/*}}}*/
 
-	public static function htmlspecialcharsRecursive($value)
-	{/*{{{*/
-		if (is_numeric($value)) {
-			return $value;
-		}
-		if (is_string($value)) {
-			return htmlspecialchars($value);
-		}
-		if (is_array($value)) {
-			foreach ($value as $k => $v) {
-				$value[$k] = self::htmlspecialcharsRecursive($v);
-			}
-			return $value;
-		}
-		if (is_object($value)) {
-
-			foreach ($value as $k => $v) {
-				$value->$k = self::htmlspecialcharsRecursive($v);
-			}
-			return $value;
-		}
-		return $value;
-	}/*}}}*/
-
-	public function tmplog($msg)
-	{/*{{{*/
-		error_log("\n[" . date('H:i:s') . " " . $_SERVER['REMOTE_ADDR'] . "]" . $msg, 3, "/tmp/log-" . date('Ymd') . ".log");
-	}/*}}}*/
-
-	public function encode_uri_json($arr)
+	public static function encode_uri_json($arr)
 	{/*{{{*/
 		$out = array();
 		foreach ($arr as $k => $v) {
@@ -377,18 +348,8 @@ class UtlsSvc
 		return $output;
 	}/*}}}*/
 
-
-	public function showMsg($alert, $url, $time = 12)
-	{/*{{{*/
-		$time = $time * 1000;
-		echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><script src="public/js/jquery-1.7.2.min.js"></script><script src="/public/js/public/msg_util.js"></script><link rel="stylesheet" href="/public/css/public/public.css" /></head><body>';
-		echo "<script>MsgUtil.show('" . addslashes($alert) . "',function(){window.location.href='" . $url . "';},$time);</script>";
-		echo "</body></html>";
-		exit;
-	}/*}}}*/
-
 	//截取字符串
-	function cutstr($string, $length, $dot = '')
+	public static function cutstr($string, $length, $dot = '')
 	{
 		$str = $string;
 		$cutlen = 0;
@@ -417,7 +378,7 @@ class UtlsSvc
 	}
 
 	//截取字符串 等宽
-	function cutstr1($string, $length, $dot = '')
+	public static function cutstr1($string, $length, $dot = '')
 	{
 		$str = $string;
 		$cutlen = 0;
@@ -445,9 +406,9 @@ class UtlsSvc
 		return $cutstr . $dot;
 	}
 
-	public function checkMobile($str)
+	public static  function checkMobile($str)
 	{
-		$pattern = "/^(13|15|18|14)\d{9}$/";
+		$pattern = "/^(13|15|18|14|17)\d{9}$/";
 		if (preg_match($pattern, $str)) {
 			Return true;
 		} else {
@@ -455,24 +416,24 @@ class UtlsSvc
 		}
 	}
 
-	public function isIpad()
+	public static function isIpad()
 	{
 		return strpos($_SERVER['HTTP_USER_AGENT'], 'iPad') !== false;
 	}
 
-	public function isIOS()
+	public static function isIOS()
 	{
 		return (strpos($_SERVER['HTTP_USER_AGENT'], 'iPad') !== false)
 		|| (strpos($_SERVER['HTTP_USER_AGENT'], 'iPhone') !== false)
 		|| (strpos($_SERVER['HTTP_USER_AGENT'], 'iPod') !== false);
 	}
 
-	public function isAndroid()
+	public static  function isAndroid()
 	{
 		return (strpos($_SERVER['HTTP_USER_AGENT'], 'Android') !== false);
 	}
 
-	public function inCompany()
+	public static function inCompany()
 	{
 		$ip = $_SERVER['REMOTE_ADDR'];
 
@@ -507,7 +468,7 @@ class UtlsSvc
 		return isset($_SERVER['READONLY_MODE']) && $_SERVER['READONLY_MODE'] == "1";
 	}
 
-	public function numToCny($num)
+	public static function numToCny($num)
 	{
 		$capUnit = array('万', '亿', '万', '圆', '');  //单元
 		$capDigit = array(2 => array('角', '分', ''), 4 => array('仟', '佰', '拾', ''));
@@ -679,127 +640,11 @@ class UtlsSvc
 		return strtoupper(trim(file_get_contents('/proc/sys/kernel/random/uuid')));
 	}
 
-	static public function sessionHijacking($uid)
-	{
-		$rand = LoaderSvc::loadSess()->get('session-hijacking-rand');
-		if (strlen($rand) == 0) {
-			LoaderSvc::loadSess()->set('session-hijacking-rand', self::uuid());
-			$rand = LoaderSvc::loadSess()->get('session-hijacking-rand');
-		}
-		return md5($uid . $_SERVER['REMOTE_ADDR'] . $_SERVER['HTTP_USER_AGENT'] . $rand);
-	}
-
-	static public function sendMail($tousers, $message, $subject = 'SYS-WARING', $ccusers = array(), $files = array())
-	{
-		$mail = new PHPMailer(); //实例化
-		$mail->IsSMTP(); // 启用SMTP 
-		$mail->Host = "smtp.exmail.qq.com"; //SMTP服务器 以163邮箱为例子 
-		$mail->Port = 25;  //邮件发送端口 
-		$mail->SMTPAuth = true;  //启用SMTP认证
-
-		$mail->CharSet = "UTF-8"; //字符集
-		$mail->Encoding = "base64"; //编码方式 
-
-		$mail->Username = "zhifu@wanglibank.com";  //你的邮箱 
-		$mail->Password = "abc1234";  //你的密码 
-		$mail->Subject = $subject; //邮件标题 
-
-		$mail->From = "zhifu@wanglibank.com";  //发件人地址（也就是你的邮箱） 
-		$mail->FromName = 'Sys-Mailer';  //发件人姓名 
-
-		foreach ($tousers as $address) {
-			$mail->AddAddress($address, '');//添加收件人（地址，昵称）
-		}
-
-		foreach ($ccusers as $address) {
-			$mail->AddCC($address, '');//添加抄送
-		}
-
-		foreach ($files as $item) {
-			$mail->AddAttachment($item['path'], $item['name']); // 添加附件,并指定名称
-		}
-
-		$mail->IsHTML(true); //支持html格式内容 
-		$mail->Body = $message;
-		return $mail->Send();
-	}
-
-	static public function displayErr($uri, $code)
-	{
-   		$r = strpos($uri,'/static/');
-   		if($r === false){
-   			$desc = '<pre style="color:orange;">
-Error Code ['.$code.'] ==> ['.$uri.']';
-			SysinfoSvc::log($desc);
-			LoaderSvc::loadSmarty()->display('error/' . $code . '.tpl');
-		} else {
-			header("http/1.1 404 Not Found");
-		}
-	}
-
 	static public function email($email)
 	{
 		return preg_match("/^[a-z0-9]([a-z0-9]*[-_\.]?[a-z0-9]+)*@([a-z0-9]*[-_]?[a-z0-9]+)+[\.][a-z]{2,3}([\.][a-z]{2})?$/i", $email);
 	}
 	
-	static public function mobile($mobile)
-	{
-	    return ((strlen($mobile) == 11 && is_numeric($mobile)));
-	}
-	
-	static public function idcode($vStr)
-	{
-	    $vCity = array(
-	        '11','12','13','14','15','21','22',
-	        '23','31','32','33','34','35','36',
-	        '37','41','42','43','44','45','46',
-	        '50','51','52','53','54','61','62',
-	        '63','64','65','71','81','82','91'
-	    );
-	    
-	    if (!preg_match('/^([\d]{17}[xX\d]|[\d]{15})$/', $vStr)) return false;
-	    
-	    if (!in_array(substr($vStr, 0, 2), $vCity)) return false;
-	    
-	    $vStr = preg_replace('/[xX]$/i', 'a', $vStr);
-	    $vLength = strlen($vStr);
-	    
-	    if ($vLength == 18)
-	    {
-	        $vBirthday = substr($vStr, 6, 4) . '-' . substr($vStr, 10, 2) . '-' . substr($vStr, 12, 2);
-	    } else {
-	        $vBirthday = '19' . substr($vStr, 6, 2) . '-' . substr($vStr, 8, 2) . '-' . substr($vStr, 10, 2);
-	    }
-	    
-	    if (date('Y-m-d', strtotime($vBirthday)) != $vBirthday) return false;
-	    if ($vLength == 18)
-	    {
-	        $vSum = 0;
-	    
-	        for ($i = 17 ; $i >= 0 ; $i--)
-	        {
-	        $vSubStr = substr($vStr, 17 - $i, 1);
-	        $vSum += (pow(2, $i) % 11) * (($vSubStr == 'a') ? 10 : intval($vSubStr , 11));
-	        }
-	    
-	        if($vSum % 11 != 1) return false;
-	    }
-	    
-	    return true;
-	}
-
-
-    static public function createSerialNum($prefix = '',$total = 8){
-        $OBJ = 'SN'.date('Y');
-        $snum = LoaderSvc::loadIdGenter()->create( $OBJ );
-        $orderid = '';
-        if(strlen($prefix)) $orderid .= $prefix;
-        for($i=strlen($snum);$i<$total;$i++){
-            $orderid .='0';
-        }
-        $orderid .= "$snum".substr(date('YmdHis'),2,12);
-        return $orderid;
-    }
 
 
 }/*}}}*/
