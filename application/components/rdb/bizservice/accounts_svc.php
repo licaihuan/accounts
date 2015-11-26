@@ -8,14 +8,14 @@ class AccountsSvc
 		return self::getDao()->add($obj);
 	}
 
-	private function getCreateAccountsLock($uid,$cat)
+	private static function getCreateAccountsLock($uid,$cat)
 	{
 		$lock = 'CREATE_ACCOUNTS_'.$uid.'_'.$cat;
 		$r = MysqlSvc::getLock($lock);
 		return $r;
 	}
 
-	private function releaseCreateAccountsLock($uid,$cat)
+	private static function releaseCreateAccountsLock($uid,$cat)
 	{
 		$lock = 'CREATE_ACCOUNTS_'.$uid.'_'.$cat;
 		$r = MysqlSvc::releaseLock($lock);
