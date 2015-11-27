@@ -171,7 +171,7 @@ class AccountsController extends ApibaseController
 	    $r = TransactionSvc::addTrans($params);
 		if(!$r){
       	    $data = array_merge($response,$params);
-      		LogSvc::fileLog('Freezes_Transid_Create_Fail['.__CLASS__.'_'.'__FUNCTION__'.']',$data);
+      		LogSvc::fileLog('Freezes_Transid_Create_Fail['.__CLASS__.'.'.'__FUNCTION__'.']',$data);
     		$ret['errno'] = '50104';
     		$this->outPut($ret);
 		}

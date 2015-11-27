@@ -35,6 +35,13 @@ class PayController extends ApibaseController
     		$ret['errno'] = '50102';
     		$this->outPut($ret);
     	}
+    	
+    	$result = TransactionSvc::getByOrderid($orderid);
+    	if(!empty($result)){
+    		$ret['errno'] = '50110';
+    		$this->outPut($ret);
+    	}
+    	
     	if($amount <= 0){
     		$ret['errno'] = '50103';
     		$this->outPut($ret);
@@ -112,6 +119,38 @@ class PayController extends ApibaseController
     	//余额支付
     	$this->outPut($ret);
     }
+    
+     /**
+	 * @apiVersion 1.0.0
+	 * @apiGroup Pay
+	 * @api {post} /api/pay/order 查询订单信息（如支付状态、交易号等）
+	 * @apiParam {Number} id 订单号
+	 * 
+	 * 
+	 * @apiSuccess (data) {Number} transid  支付交易号
+	 * @apiSuccess (data) {Number} amount  交易金额 （如 20.20￥）
+	 * @apiSuccess (data) {String} state  交易状态
+	 * @apiSuccess (data) {String} datetime  交易时间
+	 * 
+	 * @apiUse mySuccArr
+	 * @apiUse myErrRet
+	 */
+	public function orderAction()
+	{
+		$ret = $this->initOutPut();
+		$id = RequestSvc::Request('id','');
+		$result = TransactionSvc::getByOrderid($id);
+		if(!empty($result)){
+			$ret['data'] = array(
+				'transid'=>$result['transid'],
+				'amount'=>($result['tout'] > 0 ? $result['tout'] : $result['tin']),
+				'state'=>Transaction::$STATE_CONF["{$result['state']}"]['NAME'],
+				'datetime'=>$result['datetime'],
+			);
+		}
+		$this->outPut($ret);
+	}
+    
    
 
 }
